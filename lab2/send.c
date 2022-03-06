@@ -15,7 +15,7 @@
 #define STX (char)2
 #define ETX (char)3
 
-/* TODO 2: implement send_byte function */
+/* TODO 2: implement send_frame function */
 
 int main(int argc,char** argv){
 	init(HOST,PORT);
@@ -30,9 +30,9 @@ int main(int argc,char** argv){
 	send_byte('o');
 	send_byte('!');
 
-	/* TODO 2: call send_byte function with a given string input */
+	/* TODO 2: call send_frame function with a given string input */
 
-	/* TODO 3: use send_byte to send a structure of type Packet */
+	/* TODO 3: use send_frame to send a structure of type Packet */
 
 	/* TODO 4: send 100 bytes, send 300 bytes, append a timestamp to these frames */	
 	

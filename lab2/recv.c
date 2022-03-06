@@ -12,7 +12,7 @@
 #define STX (char)2
 #define ETX (char)3
 
-/* TODO 2: write recv_bytes function */
+/* TODO 2: write recv_frame function */
 
 int main(int argc,char** argv){
   init(HOST,PORT);
