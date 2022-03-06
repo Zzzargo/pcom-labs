@@ -12,6 +12,8 @@
 #define STX (char)2
 #define ETX (char)3
 
+/* TODO 2: write recv_bytes function */
+
 int main(int argc,char** argv){
   init(HOST,PORT);
   
@@ -43,6 +45,12 @@ int main(int argc,char** argv){
 
   c = recv_byte();
   printf("%c\n", c);
+
+  /* TODO 2: Run the receiver until you receive the frame DONE */
+
+  /* TODO 3: receive a frame with a structure of type Packet */
+
+  /* TODO 4: Measure latency in a while loop for any frame that contains a timestamp we receive, print frame_size and latency */
 
   printf("[RECEIVER] Finished transmission\n");
   return 0;
