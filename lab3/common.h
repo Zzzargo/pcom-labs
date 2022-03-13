@@ -1,18 +1,24 @@
 #include <stddef.h>
 #include <stdint.h>
-
-struct lab3_pkthdr {
-	size_t len;
-	uint16_t sum;
-};
+#include <stdbool.h>
+#include "link_emulator/lib.h"
 
 static inline uint8_t hamming_4to7(uint8_t c) {
-    
+	/* Implement hamming 4to7 */
 }
 
 static inline uint8_t hamming_7to4(uint8_t c) {
-	// TODO: Hamming decode one nibbleuint16_t
+	/* Implement hamming 7to4 */
 }
 
-
 uint16_t inet_csum(uint8_t *buf, size_t len);
+
+struct l3_msg_hdr {
+	uint16_t len;
+	uint16_t sum;
+};
+
+struct l3_msg {
+	struct l3_msg_hdr hdr;
+	char payload[sizeof(((msg *) NULL)->payload) / 2 - sizeof(struct l3_msg_hdr)];
+};

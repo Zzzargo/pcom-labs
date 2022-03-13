@@ -23,6 +23,7 @@ int serialization_delay = 1000;
 int delay = 1000;
 int loss = 0;
 int corrupt = 0;
+int corrupt2 = 0;
 
 #define CHANNEL_BUSY 1
 #define CHANNEL_IDLE 0
@@ -284,7 +285,11 @@ void* run_forwarding(void* param){
     else {
       if (rand()%100 < corrupt){
 	//flip a random bit in a randomly chosen byte of the payload
-	m->payload[rand()%m->len] ^= 1<<(rand()%8);
+	int random_byte = rand() % m->len;
+	int random_bit = rand();
+	m->payload[random_byte] ^= (random_bit % 8) << 1;
+	if (corrupt2)
+		m->payload[random_byte] ^= ((random_bit + 1) % 8) << 1;
       }
       //printf("Enqueue 1.");
       pthread_mutex_lock( &buffer_lock );
@@ -315,6 +320,7 @@ void* run_reverse_forwarding(void* param){
 #define DELAY 2
 #define LOSS 3
 #define CORRUPT 4
+#define CORRUPT2 5
 
 int split_param(char* p,int * type, double* value){
   char c[100];
@@ -334,6 +340,8 @@ int split_param(char* p,int * type, double* value){
 	*type = LOSS;
       else if (!strcasecmp(c,"corrupt"))
 	*type = CORRUPT;
+      else if (!strcasecmp(c,"corrupt2"))
+	*type = CORRUPT2;
       else {
 	printf ("Unknown parameter %s\n",c);
 	return -1;
@@ -398,6 +406,10 @@ int main(int argc, char** argv){
     case CORRUPT:
       printf("Setting corruption rate to %f%%\n",value);      
       corrupt = value; break;
+
+    case CORRUPT2:
+      printf("Setting double corruption to %f\n", value);      
+      corrupt2 = value; break;
     }
   }
 

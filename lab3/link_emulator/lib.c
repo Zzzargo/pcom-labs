@@ -14,6 +14,8 @@ struct sockaddr_in addr_local, addr_remote;
 int s;
 struct pollfd fds[1];
 
+static int send_message(const msg* m);
+
 void set_local_port(int port)
 {
   memset((char *) &addr_local, 0, sizeof(addr_local));
@@ -53,8 +55,17 @@ void init(char* remote, int REMOTE_PORT){
   send_message(&m);
 }
 
-int send_message(const void* m){
+int send_message(const msg* m){
   return sendto(s, m, sizeof(msg), 0,(struct sockaddr*) &addr_remote, sizeof(addr_remote));
+}
+
+void link_send(void *buf, int len) {
+	msg m;
+
+	memcpy(m.payload, buf, len);
+	m.len = len;
+
+	send_message(&m);
 }
 
 /*msg* receive_message(){
@@ -66,10 +77,18 @@ int send_message(const void* m){
   return ret;
   }*/
 
-int recv_message(void* ret){
+int recv_message(msg* ret){
   return recvfrom(s, ret, sizeof(msg), 0, NULL, NULL);
 }
 
+
+int link_recv(void *buf, int len) {
+	msg m;
+	recv_message(&m);
+	int r = m.len < len ? m.len : len;
+	memcpy(buf, m.payload, r);
+	return r;
+}
 
 //timeout in millis
 /*msg* receive_message_timeout(int timeout){

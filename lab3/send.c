@@ -12,6 +12,7 @@
 #define PORT 10000
 
 size_t hamming_encode(uint8_t *buf, size_t len, uint8_t *enc) {
+  /* Our encoding doubles the messages size */
 	for (size_t idx = 0; idx < len; idx++) {
 		enc[idx * 2] = hamming_4to7(buf[idx] >> 4);
 		enc[idx * 2 + 1] = hamming_4to7(buf[idx] & 0xf);
@@ -20,26 +21,24 @@ size_t hamming_encode(uint8_t *buf, size_t len, uint8_t *enc) {
 	return len * 2;
 }
 
-
-
-int main(int argc,char** argv){
+int main(int argc,char** argv) {
 	init(HOST,PORT);
 
-	/* Look in link_emulator/lib.h for the definition of msg */
-	msg t;
+	/* Look in common.h for the definition of l3_msg */
+	struct l3_msg t;
 
 	/* We set the payload */
 	sprintf(t.payload, "Hello World of PC");
-	t.len = strlen(t.payload) + 1;
+	t.hdr.len = strlen(t.payload) + 1;
 	/* Add the checksum */
-	t.sum = inet_csum((void *) t.payload, t.len);
+	t.hdr.sum = inet_csum((void *) t.payload, t.hdr.len);
 
 	/* Encode the message with error correction codes */
-	uint8_t enc[2 * (sizeof(msg))];
-	hamming_encode((void *) &t, sizeof(msg), enc);
+	uint8_t enc[2 * (sizeof(t.hdr) + t.hdr.len)];
+	hamming_encode((void *) &t, sizeof(enc) / 2, enc);
 
 	/* Send the message */
-	send_message(&enc);
+	link_send(&enc, sizeof(enc));
 
 	return 0;
 }
