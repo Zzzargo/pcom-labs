@@ -67,7 +67,6 @@ void send_and_receive_a_message(int sockfd, struct sockaddr_in server_address) {
 
 int main(int argc, char *argv[]) {
   struct sockaddr_in servaddr;
-  char buffer[MAXLINE];
 
   if (argc < 3) {
     fprintf(stderr, "Usage: %s <server_ip> <server_port>\n", argv[0]);
