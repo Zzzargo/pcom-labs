@@ -30,8 +30,8 @@ void recv_seq_udp(int sockfd, struct seq_udp *seq_packet) {
     }
   }
 
-  uint32_t next_seq = 0; // HINT: Foloseste aceasta variabila pentru a retine la
-                         // ce numar de secventa esti
+  static uint32_t next_seq = 0; // HINT: Foloseste aceasta variabila pentru a retine la
+                                // ce numar de secventa esti
 
   // Sending ACK
   rc = sendto(sockfd, &next_seq, sizeof(next_seq), 0,
