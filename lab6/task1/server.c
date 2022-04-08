@@ -19,6 +19,7 @@
 void recv_a_file(int sockfd, char *filename) {
   int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
   DIE(fd < 0, "open");
+  char buffer[CHUNKSIZE];
 
   while (1) {
     /* TODO B.1: Receive a chunk */
@@ -34,7 +35,7 @@ void recv_a_file(int sockfd, char *filename) {
 
 void recv_and_send_a_message(int sockfd) {
   char *hello = "Reply from the server";
-  char buffer[MAXLINE];
+  char buffer[CHUNKSIZE];
   struct sockaddr_in cliaddr;
   socklen_t len = sizeof(cliaddr);
   memset(&cliaddr, 0, sizeof(cliaddr));
