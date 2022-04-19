@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 					// s-au primit date pe unul din socketii de client,
 					// asa ca serverul trebuie sa le receptioneze
 					memset(buffer, 0, BUFLEN);
-					n = recv(i, buffer, sizeof(buffer), 0);
+					n = recv(i, buffer, sizeof(buffer) - 1, 0);
 					DIE(n < 0, "recv");
 
 					if (n == 0) {
