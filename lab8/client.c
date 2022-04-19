@@ -38,7 +38,8 @@ int main(int argc, char *argv[])
 
 	while (1) {
   		// se citeste de la stdin
-		n = read(0, buffer, sizeof(buffer));
+		memset(buffer, 0, sizeof(buffer));
+		n = read(0, buffer, sizeof(buffer) - 1);
 		DIE(n < 0, "read");
 
 		if (strncmp(buffer, "exit", 4) == 0) {
