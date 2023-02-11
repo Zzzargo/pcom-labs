@@ -1,11 +1,10 @@
-#ifndef _LINK_H_
-#define _LINK_H_
-
+#ifndef LINK
+#define LINK
 #include "lib.h"
 
 typedef struct {
-  msg *m;
+  msg* m;
   unsigned long long finish_time;
 } msg_in_flight;
 
-#endif /* _LINK_H_ */
+#endif

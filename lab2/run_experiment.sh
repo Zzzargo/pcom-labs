@@ -4,8 +4,6 @@ SPEED=1
 DELAY=1
 LOSS=0
 CORRUPT=0
-CORRUPT2=0
-REORDER=0
 
 {
     killall link
@@ -13,7 +11,7 @@ REORDER=0
     killall send
 } &> /dev/null
 
-./link_emulator/link speed=$SPEED delay=$DELAY loss=$LOSS corrupt=$CORRUPT corrupt2=$CORRUPT2 reorder=$REORDER &
+./link_emulator/link speed=$SPEED delay=$DELAY loss=$LOSS corrupt=$CORRUPT &> /dev/null &
 sleep 1
 ./recv &
 sleep 1
