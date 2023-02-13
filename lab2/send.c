@@ -11,6 +11,8 @@
 #define HOST "127.0.0.1"
 #define PORT 10000
 
+/* Here we have the Frame structure */
+#include "common.h"
 #define DLE (char)0
 #define STX (char)2
 #define ETX (char)3

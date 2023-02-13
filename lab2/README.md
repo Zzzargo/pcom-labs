@@ -4,6 +4,8 @@ Physical layer simulator.
 
 ``recv.c`` - the code that the receiver on the other end of the wire will execute
 
+``common.h`` - header where we define the `Frame` structure
+
 Overview of the architecture
 ```
 sender                receiver
