@@ -9,39 +9,38 @@
 #define HOST "127.0.0.1"
 #define PORT 10001
 
-static inline uint8_t hamming_7to4(uint8_t c) {
-	// TODO 3: Implement hamming decoding for one nibble
-	// TODO 4: Implement error correction
-}
-
-size_t hamming_decode(uint8_t *enc, size_t len, uint8_t *buf) {
-	for (size_t idx = 0; idx < (len / 2); idx++) {
-		/* In the encoded message we have to concatenate 4 bits from two different bytes. */
-		buf[idx] = hamming_7to4(enc[idx * 2]) << 4;
-		buf[idx] |= hamming_7to4(enc[idx * 2 + 1]);
-	}
-
-	return len / 2;
-}
 
 int main(int argc,char** argv) {
-	struct l3_msg t;
+	/* Don't modify this */
 	init(HOST,PORT);
 
-	uint8_t enc_ph[sizeof(struct l3_msg) * 2];
+	struct l3_msg t;
 
-	/* Receive the encoded message */
-	int len = link_recv(&enc_ph, sizeof(enc_ph));
+	/* Receive the frame from the link */
+	int len = link_recv(&t, sizeof(struct l3_msg));
 	if (len < 0){
 		perror("Receive message");
 		return -1;
 	}
 
-	hamming_decode(enc_ph, len, (void *) &t);
+	int sum_ok = simple_csum((void *) t.payload, t.hdr.len) == t.hdr.sum;
+	/* TODO 2: Change to crc32 */
 
-	int sum_ok = inet_csum((void *) t.payload, t.hdr.len) == t.hdr.sum;
+	/* Since we are sending messages with a payload of 1500 - sizeof(header), most of the times the bytes from
+	 * 30 - 1500 will be corrupted and thus when we are printing or string message "Hello world" we see no probems.
+	 * This will be visible when we will be sending a file */
 
-	printf("len=%d; sum(%s)=0x%04hx; payload=\"%s\";\n", t.hdr.len, sum_ok ? "GOOD" : "BAD", t.hdr.sum, t.payload);
+	printf("[RECV] len=%d; sum(%s)=0x%04hx; payload=\"%s\";\n", t.hdr.len, sum_ok ? "GOOD" : "BAD", t.hdr.sum, t.payload);
+
+	/* TODO 3.1: In a loop, recv a frame and check if the CRC is good */
+
+	/* TODO 3.2: If the crc is bad, send a NACK frame */
+
+	/* TODO 3.2: Otherwise, write the frame payload to a file recv.data */
+
+	/* TODO 3.3: Adjust the corruption rate */
+
+
 
 	return 0;
 }

@@ -1,5 +1,20 @@
 #include "common.h"
 
-uint16_t inet_csum(uint8_t *buf, size_t len) {
-	//TODO1: Calculate the internet checksum according to RFC1071
+uint8_t simple_csum(uint8_t *buf, size_t len) {
+
+	/* TODO 1.1: Implement the simple checksum algorithm */
+	return 0;
+}
+
+uint32_t crc32(uint8_t *buf, size_t len)
+{
+	/* TODO 2.1: Implement the CRC 32 algorithm */
+
+	/* Iterate through each byte of buff */
+	
+		/* Iterate through each bit */
+		/* If the bit is 1, compute the new reminder */
+
+	/* By convention, we negate the crc */
+	return 0;
 }

@@ -11,19 +11,6 @@
 #define HOST "127.0.0.1"
 #define PORT 10000
 
-static inline uint8_t hamming_4to7(uint8_t c) {
-	// TODO 2: Implement hamming encoding for one nibble
-}
-
-/* For each 4 bits we add 3 redundancy bits. We split a byte intwo two */
-size_t hamming_encode(uint8_t *buf, size_t len, uint8_t *enc) {
-	for (size_t idx = 0; idx < len; idx++) {
-		enc[idx * 2] = hamming_4to7(buf[idx] >> 4);
-		enc[idx * 2 + 1] = hamming_4to7(buf[idx] & 0xf);
-	}
-
-	return len * 2;
-}
 
 int main(int argc,char** argv) {
 	init(HOST,PORT);
@@ -34,15 +21,21 @@ int main(int argc,char** argv) {
 	/* We set the payload */
 	sprintf(t.payload, "Hello World of PC");
 	t.hdr.len = strlen(t.payload) + 1;
-	/* Add the checksum */
-	t.hdr.sum = inet_csum((void *) t.payload, t.hdr.len);
 
-	/* Encode the message with error correction codes */
-	uint8_t enc[2 * (sizeof(t.hdr) + t.hdr.len)];
-	hamming_encode((void *) &t, sizeof(enc) / 2, enc);
+	/* Add the checksum */
+	t.hdr.sum = simple_csum((void *) t.payload, t.hdr.len);
+
+	/* TODO 2.0: Call crc32 function */
 
 	/* Send the message */
-	link_send(&enc, sizeof(enc));
+	link_send(&t, sizeof(struct l3_msg));
+
+	/* TODO 3.1: Receive the confirmation */
+
+	/* TODO 3.2: If we received a NACK, retransmit the previous frame */
+
+	/* TODO 3.3: Update this to read the content of a file and send it as
+	 * chunks of that file given a MTU of 1500 bytes */
 
 	return 0;
 }
