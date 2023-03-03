@@ -28,6 +28,8 @@ int send_packet(int interface, char *packet, int len);
 /* Receives a packet. Returns the interface it has been received from. */
 int get_packet(char *packet, int *len);
 
+
+
 /* Utility functions below */
 
 /* Returns the checksum of an IP header */
@@ -39,6 +41,12 @@ char *get_interface_ip(int interface);
 /* Write to mac, a uint8_t mac[6] the MAC address of an interface */
 int get_interface_mac(int interface, uint8_t *mac);
 
+
+
+
+
+
+/* Extra function */
 size_t read_mac_table(struct mac_entry *mac_table);
 
 size_t read_rtable(struct rtable_entry *rtable);
