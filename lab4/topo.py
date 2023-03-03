@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 
 import time
 import sys
@@ -12,6 +12,26 @@ from mininet.util import dumpNodeConnections
 import info
 import tests
 
+N_HOSTS = 4
+LOGFILE = "/tmp/debug.txt"
+
+BASE_FORMATS = {
+        "host_name": "host{}",
+        "router_if_name": "r-{}",
+        "host_if_name": "h-{}",
+        "router_ip": "192.168.{}.1",
+        "host_ip": "192.168.{}.2",
+        "router_ip6": "fec0::{:x}:1",
+        "router_llip6": "fe80::{:x}:1",
+        "host_ip6": "fd00::{:x}:2",
+        "host_llip6": "fe80::{:x}:2",
+        "router_mac": "DE:FE:C8:ED:00:{:02x}",
+        "host_mac": "DE:AD:BE:EF:00:{:02x}",
+}
+
+
+def get(value, host):
+    return BASE_FORMATS[value].format(host)
 
 class SingleSwitchTopo(Topo):
     "Single switch connected to n hosts."
@@ -131,11 +151,6 @@ class NetworkManager(object):
 
             else:
                 return
-
-            cmd = "python ./checker.py \
-                    --testname={} \
-                    --me={} \
-                    --hosts={}".format(testname, ha, hosts)
 
             procs[ha] = self.hosts[ha].popen(cmd, shell=True)
 

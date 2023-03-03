@@ -1,4 +1,21 @@
-#include "skel.h"
+#include <sys/ioctl.h>
+#include <net/if.h>
+#include <unistd.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <linux/if_packet.h>
+#include <net/ethernet.h> /* the L2 protocols */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <net/if.h>
+/* According to POSIX.1-2001, POSIX.1-2008 */
+#include <sys/select.h>
+#include <asm/byteorder.h>
+#include "lib.h"
+#include <arpa/inet.h>
 
 extern int interfaces[ROUTER_NUM_INTERFACES];
 
@@ -23,27 +40,27 @@ int get_sock(const char *if_name)
 	return s;
 }
 
-msg* socket_receive_message(int sockfd, msg *m)
+int socket_receive_message(int sockfd, char *buf, int *len)
 {
 	/*
 	 * Note that "buffer" should be at least the MTU size of the
 	 * interface, eg 1500 bytes
 	 * */
-	m->len = read(sockfd, m->payload, MAX_LEN);
-	DIE(m->len == -1, "read");
-	return m;
+	*len = read(sockfd, buf, MAX_LEN);
+	DIE(*len == -1, "read");
+	return 0;
 }
 
-int send_packet(int sockfd, msg *m)
+int send_packet(int sockfd, char *buf, int len)
 {        
 	/* 
 	 * Note that "buffer" should be at least the MTU size of the 
 	 * interface, eg 1500 bytes 
 	 * */
-	return write(interfaces[sockfd], m->payload, m->len);
+	return write(interfaces[sockfd], buf, len);
 }
 
-int get_packet(msg *m) {
+int get_packet(char * buf, int *len) {
 	int res;
 	fd_set set;
 
@@ -58,9 +75,8 @@ int get_packet(msg *m) {
 
 		for (int i = 0; i < ROUTER_NUM_INTERFACES; i++) {
 			if (FD_ISSET(interfaces[i], &set)) {
-				socket_receive_message(interfaces[i], m);
-				m->interface = i;
-				return 0;
+				socket_receive_message(interfaces[i], buf, len);
+				return i;
 			}
 		}
 	}
@@ -185,7 +201,7 @@ int hwaddr_aton(const char *txt, uint8_t *addr)
 	return 0;
 }
 
-size_t read_nei_table(struct nei_entry *nei_table)
+size_t read_mac_table(struct mac_entry *nei_table)
 {
 	fprintf(stderr, "Parsing neighbors table\n");
 
@@ -198,25 +214,13 @@ size_t read_nei_table(struct nei_entry *nei_table)
 	for (i = 0; fgets(line, sizeof(line), f); i++) {
 		char ip_str[50], mac_str[50];
 
-		if (strchr(line, '.') == NULL)
-			nei_table[i].proto = 6;
-		else
-			nei_table[i].proto = 4;
-
 		sscanf(line, "%s %s", ip_str, mac_str);
-		fprintf(stderr, "IPv%d: %s MAC: %s\n", nei_table[i].proto, ip_str, mac_str);
+		fprintf(stderr, "IPv: %s MAC: %s\n", ip_str, mac_str);
 
-		if (nei_table[i].proto == 4) {
-			int rc = inet_pton(AF_INET, ip_str, &nei_table[i].ip);
-			DIE(rc != 1, "invalid IPv4");
-		}
+		int rc = inet_pton(AF_INET, ip_str, &nei_table[i].ip);
+		DIE(rc != 1, "invalid IPv4");
 
-		if (nei_table[i].proto == 6) {
-			int rc = inet_pton(AF_INET6, ip_str, &nei_table[i].ip6);
-			DIE(rc != 1, "invalid IPv6");
-		}
-
-		int rc = hwaddr_aton(mac_str, nei_table[i].mac);
+		rc = hwaddr_aton(mac_str, nei_table[i].mac);
 		DIE(rc < 0, "invalid MAC");
 	}
 
@@ -239,36 +243,18 @@ size_t read_rtable(struct rtable_entry *rtable)
 	for (i = 0; fgets(line, sizeof(line), f); i++) {
 		char net_str[50], nh_str[50], nm_str[50];
 
-		if (strchr(line, '.') == NULL)
-			rtable[i].proto = 6;
-		else
-			rtable[i].proto = 4;
-
 		int rc = sscanf(line, "%s %s %s %u %d", net_str, nm_str, nh_str, &rtable[i].metric, &rtable[i].interface);
-		fprintf(stderr, "IPv%d route: %s/%s via %s dev r-%d metric %u\n", rtable[i].proto, net_str, nm_str, nh_str, rtable[i].interface, rtable[i].metric);
+		fprintf(stderr, "IPv4 route: %s/%s via %s dev r-%d metric %u\n", net_str, nm_str, nh_str, rtable[i].interface, rtable[i].metric);
 		DIE(rc != 5, "invalid routing table entry");
 
-		if (rtable[i].proto == 4) {
-			rc = inet_pton(AF_INET, net_str, &rtable[i].network);
-			DIE(rc != 1, "invalid IPv4");
+		rc = inet_pton(AF_INET, net_str, &rtable[i].network);
+		DIE(rc != 1, "invalid IPv4");
 
-			rc = inet_pton(AF_INET, nm_str, &rtable[i].netmask);
-			DIE(rc != 1, "invalid IPv4");
+		rc = inet_pton(AF_INET, nm_str, &rtable[i].netmask);
+		DIE(rc != 1, "invalid IPv4");
 
-			rc = inet_pton(AF_INET, nh_str, &rtable[i].nexthop);
-			DIE(rc != 1, "invalid IPv4");
-		}
-
-		if (rtable[i].proto == 6) {
-			rc = inet_pton(AF_INET6, net_str, &rtable[i].network6);
-			DIE(rc != 1, "invalid IPv6");
-
-			rc = inet_pton(AF_INET6, nm_str, &rtable[i].netmask6);
-			DIE(rc != 1, "invalid IPv6");
-
-			rc = inet_pton(AF_INET6, nh_str, &rtable[i].nexthop6);
-			DIE(rc != 1, "invalid IPv6");
-		}
+		rc = inet_pton(AF_INET, nh_str, &rtable[i].nexthop);
+		DIE(rc != 1, "invalid IPv4");
 	}
 
 	fclose(f);

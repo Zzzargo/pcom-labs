@@ -1,0 +1,56 @@
+#include <stdint.h>
+
+/* 
+ *Note that "buffer" should be at least the MTU size of the 
+ * interface, eg 1500 bytes 
+ */
+#define MAX_LEN 1500
+#define ROUTER_NUM_INTERFACES 4
+
+/* MAC Table Entry */
+struct mac_entry {
+	int32_t ip;
+	uint8_t mac[6];
+};
+
+/* Route Table Entry */
+struct rtable_entry {
+	uint32_t network;
+	uint32_t netmask;
+	uint32_t nexthop;
+	uint32_t metric;
+	int interface;
+};
+
+/* Sends a packet on an interface. */
+int send_packet(int interface, char *packet, int len);
+
+/* Receives a packet. Returns the interface it has been received from. */
+int get_packet(char *packet, int *len);
+
+/* Utility functions below */
+
+/* Returns the checksum of an IP header */
+uint16_t ip_checksum(void* vdata,size_t length);
+
+/* Returns the ip address of a ninterface */
+char *get_interface_ip(int interface);
+
+/* Write to mac, a uint8_t mac[6] the MAC address of an interface */
+int get_interface_mac(int interface, uint8_t *mac);
+
+size_t read_mac_table(struct mac_entry *mac_table);
+
+size_t read_rtable(struct rtable_entry *rtable);
+
+/* Macro for sanity checks */
+#define DIE(condition, message) \
+	do { \
+		if ((condition)) { \
+			fprintf(stderr, "[%d]: %s\n", __LINE__, (message)); \
+			perror(""); \
+			exit(1); \
+		} \
+	} while (0)
+
+void init();

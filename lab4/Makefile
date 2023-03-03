@@ -1,5 +1,5 @@
 PROJECT=router
-SOURCES=router.c skel.c
+SOURCES=router.c lib/lib.c
 LIBRARY=nope
 INCPATHS=.
 LIBPATHS=.
