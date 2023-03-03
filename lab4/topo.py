@@ -9,8 +9,6 @@ from mininet.net import Mininet
 from mininet.topo import Topo
 from mininet.util import dumpNodeConnections
 
-import info
-import tests
 
 N_HOSTS = 4
 LOGFILE = "/tmp/debug.txt"
@@ -137,34 +135,6 @@ class NetworkManager(object):
 
     def start_router(self):
         self.router.cmd("./router > {} 2>&1 &".format(info.LOGFILE))
-
-    def run_test(self, testname):
-        test = tests.TESTS[testname]
-
-        procs = {}
-        for ha in test['hosts_a']:
-            if testname == 'ping':
-                hosts = ','.join([info.get('host_ip', h) for h in test['hosts_a'] if h != ha])
-
-            elif testname == 'ping6':
-                hosts = ','.join([info.get('host_ip6', h) for h in test['hosts_a'] if h != ha])
-
-            else:
-                return
-
-            procs[ha] = self.hosts[ha].popen(cmd, shell=True)
-
-        results = {}
-        passed = True
-        # XXX will this loop necessarily end?
-        for ha in test['hosts_a']:
-            h = self.net.get(info.get('host_name', ha))
-            p = procs[ha]
-            p.wait()
-            res = p.stdout.read().decode().strip()
-            passed = passed and (res == "PASS")
-
-        return passed
 
 def main():
     topo = SingleSwitchTopo(n=info.N_HOSTS)
