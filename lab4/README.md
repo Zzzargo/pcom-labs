@@ -49,7 +49,7 @@ struct rtable_entry {
 
 ```
 h0 <------>(r-0)|--------|(r-1) <---------> h1
-		   		| Router |
+                | Router |
 h0 <------>(r-3)|--------|(r-2) <---------> h2
 
 r-1, r-2, r-3, r-4 interfaces
