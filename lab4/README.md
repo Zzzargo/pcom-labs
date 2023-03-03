@@ -47,7 +47,13 @@ struct rtable_entry {
 
 ## Topology
 
+```
+h0 <------>(r-0)|--------|(r-1) <---------> h1
+		   		| Router |
+h0 <------>(r-3)|--------|(r-2) <---------> h2
 
+r-1, r-2, r-3, r-4 interfaces
+```
 ## Usage
 
 To compile the code
