@@ -37,9 +37,9 @@ class SingleSwitchTopo(Topo):
         switch = self.addHost('router', ip=None)
         # Python's range(N) generates 0..N-1
         for h in range(n):
-            host = self.addHost(info.get("host_name", h), ip=None)
-            i1 = info.get("host_if_name", h)
-            i2 = info.get("router_if_name", h)
+            host = self.addHost(get("host_name", h), ip=None)
+            i1 = get("host_if_name", h)
+            i2 = get("router_if_name", h)
             self.addLink(host, switch, intfName1=i1, intfName2=i2)
 
 
@@ -49,15 +49,15 @@ class NetworkManager(object):
         self.router = self.net.get("router")
         self.hosts = []
         for i in range(n_hosts):
-            h = self.net.get(info.get("host_name", i))
+            h = self.net.get(get("host_name", i))
             self.hosts.append(h)
 
     def setup_ifaces(self):
         for i in range(len(self.hosts)):
-            host_ip = info.get("host_ip", i)
-            host_ip6 = info.get("host_ip6", i)
-            host_llip6 = info.get("host_ip6", i)
-            h_if = info.get("host_if_name", i)
+            host_ip = get("host_ip", i)
+            host_ip6 = get("host_ip6", i)
+            host_llip6 = get("host_ip6", i)
+            h_if = get("host_if_name", i)
 
             self.hosts[i].setIP(host_ip, prefixLen=24, intf=h_if)
             self.hosts[i].cmd("ip -6 address add {}/112 dev {}".format(host_ip6, h_if))
@@ -65,12 +65,12 @@ class NetworkManager(object):
 
     def setup_macs(self):
         for i, host in enumerate(self.hosts):
-            h_mac = info.get("host_mac", i)
-            h_if = info.get("host_if_name", i)
+            h_mac = get("host_mac", i)
+            h_if = get("host_if_name", i)
             host.cmd("ifconfig {} hw ether {}".format(h_if, h_mac))
 
-            r_mac = info.get("router_mac", i)
-            r_if = info.get("router_if_name", i)
+            r_mac = get("router_mac", i)
+            r_if = get("router_if_name", i)
             self.router.cmd("ifconfig {} hw ether {}".format(r_if, r_mac))
 
     def disable_unneeded(self):
@@ -92,8 +92,8 @@ class NetworkManager(object):
         disable_ipv6(self.router)
 
         for i, host in enumerate(self.hosts):
-            h_if = info.get("host_if_name", i)
-            r_if = info.get("router_if_name", i)
+            h_if = get("host_if_name", i)
+            r_if = get("router_if_name", i)
 
             disable_ipv6_autoconf(host)
 
@@ -109,19 +109,19 @@ class NetworkManager(object):
 
     def add_default_routes(self):
         for i, host in enumerate(self.hosts):
-            ip = info.get("router_ip", i)
-            ip6 = info.get("router_llip6", i)
-            h_if = info.get("host_if_name", i)
+            ip = get("router_ip", i)
+            ip6 = get("router_llip6", i)
+            h_if = get("host_if_name", i)
 
             host.cmd("ip -4 route add default via {} dev {}".format(ip, h_if))
             host.cmd("ip -6 route add default via {} dev {}".format(ip6, h_if))
 
     def add_nei_entries(self):
         for i, host in enumerate(self.hosts):
-            ifname = info.get("host_if_name", i)
-            ip = info.get("router_ip", i)
-            ip6 = info.get("router_llip6", i)
-            mac = info.get("router_mac", i)
+            ifname = get("host_if_name", i)
+            ip = get("router_ip", i)
+            ip6 = get("router_llip6", i)
+            mac = get("router_mac", i)
 
             host.cmd("ip -4 neigh add {} lladdr {} dev {}".format(ip, mac, ifname))
             host.cmd("ip -6 neigh add {} lladdr {} dev {}".format(ip6, mac, ifname))
@@ -134,14 +134,14 @@ class NetworkManager(object):
         self.add_default_routes()
 
     def start_router(self):
-        self.router.cmd("./router > {} 2>&1 &".format(info.LOGFILE))
+        self.router.cmd("./router > {} 2>&1 &".format(LOGFILE))
 
 def main():
-    topo = SingleSwitchTopo(n=info.N_HOSTS)
+    topo = SingleSwitchTopo(n=N_HOSTS)
     net = Mininet(topo)
     net.start()
 
-    nm = NetworkManager(net, info.N_HOSTS)
+    nm = NetworkManager(net, N_HOSTS)
     nm.setup()
     nm.start_router()
 

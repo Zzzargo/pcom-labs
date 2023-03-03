@@ -1,3 +1,5 @@
+/* Infrastrucutre for the lab, students beware, here are dragons
+*/
 #include <sys/ioctl.h>
 #include <net/if.h>
 #include <unistd.h>
@@ -205,7 +207,7 @@ size_t read_mac_table(struct mac_entry *nei_table)
 {
 	fprintf(stderr, "Parsing neighbors table\n");
 
-	FILE *f = fopen("nei_table.txt", "r");
+	FILE *f = fopen("mac_table.txt", "r");
 	DIE(f == NULL, "Failed to open nei_table.txt");
 
 	char line[100];
