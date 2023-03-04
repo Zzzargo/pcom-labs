@@ -17,6 +17,8 @@ struct l3_msg_hdr {
 struct l3_msg {
 	struct l3_msg_hdr hdr;
 	/* Data */
-	/* MTU = 1500 => we can send 1500 - header size bytes of data */
-	char payload[1500 - sizeof(l3_msg_hdr)];
+
+	/* Note: MTU = 1500 => we can send 1500 - header size bytes of data */
+	/* TODO 3.3: Update this to a higher value based on the MTU */
+	char payload[25];
 };

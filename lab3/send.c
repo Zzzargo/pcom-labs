@@ -19,11 +19,14 @@ int main(int argc,char** argv) {
 	struct l3_msg t;
 
 	/* We set the payload */
-	sprintf(t.payload, "Hello World of PC");
+	sprintf(t.payload, "Hello my World of PC!");
 	t.hdr.len = strlen(t.payload) + 1;
 
 	/* Add the checksum */
-	t.hdr.sum = simple_csum((void *) t.payload, t.hdr.len);
+	/* Note that we compute the checksum for both header and data. Thus
+	 * we set the checksum equal to 0 when computing it */
+	t.hdr.sum = 0;
+	t.hdr.sum = simple_csum((void *) &t, sizeof(struct l3_msg));
 
 	/* TODO 2.0: Call crc32 function */
 

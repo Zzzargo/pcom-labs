@@ -23,14 +23,16 @@ int main(int argc,char** argv) {
 		return -1;
 	}
 
-	int sum_ok = simple_csum((void *) t.payload, t.hdr.len) == t.hdr.sum;
+	uint8_t recv_sum = t.hdr.sum;
+	t.hdr.sum = 0;
+	int sum_ok = (simple_csum((void *) &t, sizeof(struct l3_msg)) == recv_sum);
 	/* TODO 2: Change to crc32 */
 
 	/* Since we are sending messages with a payload of 1500 - sizeof(header), most of the times the bytes from
 	 * 30 - 1500 will be corrupted and thus when we are printing or string message "Hello world" we see no probems.
 	 * This will be visible when we will be sending a file */
 
-	printf("[RECV] len=%d; sum(%s)=0x%04hx; payload=\"%s\";\n", t.hdr.len, sum_ok ? "GOOD" : "BAD", t.hdr.sum, t.payload);
+	printf("[RECV] len=%d; sum(%s)=0x%04hx; payload=\"%s\";\n", t.hdr.len, sum_ok ? "GOOD" : "BAD", recv_sum, t.payload);
 
 	/* TODO 3.1: In a loop, recv a frame and check if the CRC is good */
 
