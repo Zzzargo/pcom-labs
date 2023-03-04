@@ -39,7 +39,7 @@ uint16_t ip_checksum(void* vdata,size_t length);
 char *get_interface_ip(int interface);
 
 /* Write to mac, a uint8_t mac[6] the MAC address of an interface */
-int get_interface_mac(int interface, uint8_t *mac);
+int get_interface_mac(int interface, uint8_t mac[6]);
 
 
 

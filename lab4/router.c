@@ -4,9 +4,6 @@
 #include "lib.h"
 #include "protocols.h"
 
-/* We don't touch this */
-int interfaces[ROUTER_NUM_INTERFACES];
-
 /* Routing table */
 struct rtable_entry *rtable;
 int rtable_len;
@@ -61,6 +58,7 @@ int main(int argc, char *argv[])
 		len the size of the packet. */
 		interface = get_packet(buf, &len);
 		DIE(interface < 0, "get_message");
+		printf("We have received a packet\n");
 		
 		/* Extract the Ethernet header from the packet. Since protocols are
 		 * stacked, the first header is the ethernet header, the next header is
@@ -78,6 +76,6 @@ int main(int argc, char *argv[])
 		 * address. Use get_interface_mac(m.interface, uint8_t *mac) to
 		 * find the mac address of our interface. */
 		  
-		// Call send_packet(&m)
+		// Call send_packet(best_router->interface, packet, len);
 	}
 }

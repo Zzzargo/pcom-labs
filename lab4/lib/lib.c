@@ -19,7 +19,7 @@
 #include "lib.h"
 #include <arpa/inet.h>
 
-extern int interfaces[ROUTER_NUM_INTERFACES];
+int interfaces[ROUTER_NUM_INTERFACES];
 
 int get_sock(const char *if_name)
 {
@@ -85,7 +85,7 @@ int get_packet(char * buf, int *len) {
 	return -1;
 }
 
-int get_interface_mac(int interface, uint8_t *mac)
+int get_interface_mac(int interface, uint8_t mac[6])
 {
 	struct ifreq ifr;
 	sprintf(ifr.ifr_name, "r-%u", interface);

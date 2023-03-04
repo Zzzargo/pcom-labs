@@ -4,7 +4,7 @@ LIBRARY=nope
 INCPATHS=.
 LIBPATHS=.
 LDFLAGS=
-CFLAGS=-c -Wall
+CFLAGS=-c -Wall -Werror -Wno-error=unused-variable
 CC=gcc
 
 # ------------ MAGIC BEGINS HERE -------------
