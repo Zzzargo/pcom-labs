@@ -54,9 +54,9 @@ int main(int argc,char** argv){
 
 	/* TODO 3.1: Get a timestamp of the current time copy it in the the payload */
 
-	/* TODO 3.0: Upload the maximum size of the payload in Frame to 100, send the frame */
+	/* TODO 3.0: Update the maximum size of the payload in Frame to 100 (in common.h), send the frame */
 
-	/* TODO 3.0: Upload the maximum size of the payload in Frame to 300, send the frame */
+	/* TODO 3.0: Update the maximum size of the payload in Frame to 300, send the frame */
 
 	return 0;
 }
