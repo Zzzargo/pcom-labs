@@ -20,7 +20,28 @@ Link 2 - 10 Mbps, 5ms delay, 0% packet loss (parameters set at topo.py:60)a
 client IP (h1) - 192.168.1.100
 server IP (h2) - 172.160.0.100
 ```
+## API
+We will use the `sockers API`. For the queue, we have a simple queue implementation
+defined in `queue.h`.
 
+```C
+datagram_queue = queue_create();
+queue datagram_queue;
+seq_udp p;
+queue_enq(datagram_queue, &p);
+
+seq_udp *t;
+t = queue_deq(datagram_queue)
+```
+
+Our protocol implementation will have the following datagram structure over UDP:
+
+```C
+struct seq_udp {    
+  uint32_t len;    
+  char payload[MAXSIZE];    
+};
+```
 
 ## Usage
 To compile the code
