@@ -29,7 +29,7 @@ Note, if you want to use C++, simply change the extension of the `send.c` and
 `recv.c` to `.cpp` and update the Makefile to use `g++`.
 
 ## API
-```C
+```c
 /* This is the API exposed by the datalink protocol we're building upon and
 already deals with framing. Our extension introduces the support for error
 detection*/
