@@ -47,9 +47,10 @@ void send_file(int sockfd, struct sockaddr_in server_address, char *filename) {
   }
 
   // seq_udp *t = queue_deq(datagram_queue)
-  /* TODO 1.2: Pop the front of the queue, if not empty send the datagram. Free the data after sending.*/
+  /* TODO 1.2: Pop the front of the queue, if not empty send the datagram. */
 
-  /* TODO 1.3: Wait for ACK before moving to the next datagram to send. */
+  /* TODO 1.3: Wait for ACK before moving to the next datagram to send. Free the previous
+    datagram on ACK.  */
 
   /* TODO 2.2: Send window_size packets from the queue. Don't forget to free the data. */
 
