@@ -25,7 +25,7 @@ int main(int argc,char** argv) {
 	}
 
 	/* We have to convert it to host order */
-	uint8_t recv_sum = ntohl(t.hdr.sum);
+	uint32_t recv_sum = ntohl(t.hdr.sum);
 	t.hdr.sum = 0;
 	int sum_ok = (simple_csum((void *) &t, sizeof(struct l3_msg)) == recv_sum);
 	/* TODO 2: Change to crc32 */
