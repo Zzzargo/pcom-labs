@@ -3,7 +3,7 @@
 uint8_t simple_csum(uint8_t *buf, size_t len) {
 
 	/* TODO 1.1: Implement the simple checksum algorithm */
-	uint8_t sum;
+	uint8_t sum = 0;
 
 	for (int i = 0; i < len; i++) {
 		sum += buf[i];
