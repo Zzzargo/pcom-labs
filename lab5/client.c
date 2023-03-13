@@ -77,8 +77,7 @@ int main(int argc, char *argv[]) {
   memset(&servaddr, 0, sizeof(servaddr));
   servaddr.sin_family = AF_INET;
   servaddr.sin_port = htons(PORT);
-  rc = inet_aton(SERVER_IP, &servaddr.sin_addr);
-  DIE(rc < 0, "inet_aton");
+  servaddr.sin_addr.s_addr = INADDR_ANY; // Receive from any address
 
   struct seq_udp d;
   strcpy(d.payload, "Hello world!");
