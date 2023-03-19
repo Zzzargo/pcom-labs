@@ -60,8 +60,6 @@ class NetworkManager(object):
             h_if = get("host_if_name", i)
 
             self.hosts[i].setIP(host_ip, prefixLen=24, intf=h_if)
-            self.hosts[i].cmd("ip -6 address add {}/112 dev {}".format(host_ip6, h_if))
-            self.hosts[i].cmd("ip -6 address add {}/64 dev {}".format(host_llip6, h_if))
 
     def setup_macs(self):
         for i, host in enumerate(self.hosts):
@@ -79,7 +77,8 @@ class NetworkManager(object):
             host.cmd("sysctl -w net.ipv6.conf.all.accept_ra=0")
 
         def disable_ipv6(host):
-            host.cmd("sysctl -w net.ipv6.conf.all.disable_ipv6=1")
+            host.cmd('sysctl -w net.ipv6.conf.all.disable_ipv6=1')
+            host.cmd('sysctl -w net.ipv6.conf.default.disable_ipv6=1')
 
         def disable_nic_checksum(host, iface):
             host.cmd('ethtool iface {} --offload rx off tx off'.format(iface))
@@ -96,6 +95,7 @@ class NetworkManager(object):
             r_if = get("router_if_name", i)
 
             disable_ipv6_autoconf(host)
+            disable_ipv6(host)
 
             disable_nic_checksum(host, h_if)
             disable_nic_checksum(self.router, h_if)
