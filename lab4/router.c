@@ -5,7 +5,7 @@
 #include "protocols.h"
 
 /* Routing table */
-struct rtable_entry *rtable;
+struct route_table_entry *rtable;
 int rtable_len;
 
 /* Mac table */
@@ -16,9 +16,10 @@ int mac_table_len;
  Returns a pointer (eg. &rtable[i]) to the best matching route, or NULL if there
  is no matching route.
 */
-struct rtable_entry *get_best_route(uint32_t ip_dest) {
+struct route_table_entry *get_best_route(uint32_t ip_dest) {
 	/* TODO 2.2: Implement the LPM algorithm */
-	/* We can iterate through rtable for (int i = 0; i < rtable_len; i++)*/
+	/* We can iterate through rtable for (int i = 0; i < rtable_len; i++). Entries in
+	 * the rtable are in network order already */
 	return NULL;
 }
 
@@ -41,7 +42,7 @@ int main(int argc, char *argv[])
 	init();
 
 	/* Code to allocate the MAC and route tables */
-	rtable = malloc(sizeof(struct rtable_entry) * 100);
+	rtable = malloc(sizeof(struct route_table_entry) * 100);
 	/* DIE is a macro for sanity checks */
 	DIE(rtable == NULL, "memory");
 
@@ -49,7 +50,7 @@ int main(int argc, char *argv[])
 	DIE(mac_table == NULL, "memory");
 	
 	/* Read the static routing table and the MAC table */
-	rtable_len = read_rtable(rtable);
+	rtable_len = read_rtable("rtable.txt", rtable);
 	mac_table_len = read_mac_table(mac_table);
 
 	while (1) {

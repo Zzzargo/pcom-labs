@@ -199,35 +199,31 @@ size_t read_mac_table(struct mac_entry *nei_table)
 	return i;
 }
 
-size_t read_rtable(struct rtable_entry *rtable)
+int read_rtable(const char *path, struct route_table_entry *rtable)
 {
-	fprintf(stderr, "Parsing routing table\n");
+	FILE *fp = fopen(path, "r");
+	int j = 0, i;
+	char *p, line[64];
 
-	FILE *f = fopen("rtable.txt", "r");
-	DIE(f == NULL, "Failed to open rtable.txt");
+	while (fgets(line, sizeof(line), fp) != NULL) {
+		p = strtok(line, " .");
+		i = 0;
+		while (p != NULL) {
+			if (i < 4)
+				*(((unsigned char *)&rtable[j].prefix)  + i % 4) = (unsigned char)atoi(p);
 
-	char line[200];
-	size_t i;
+			if (i >= 4 && i < 8)
+				*(((unsigned char *)&rtable[j].next_hop)  + i % 4) = atoi(p);
 
-	for (i = 0; fgets(line, sizeof(line), f); i++) {
-		char net_str[50], nh_str[50], nm_str[50];
+			if (i >= 8 && i < 12)
+				*(((unsigned char *)&rtable[j].mask)  + i % 4) = atoi(p);
 
-		int rc = sscanf(line, "%s %s %s %u %d", net_str, nm_str, nh_str, &rtable[i].metric, &rtable[i].interface);
-		fprintf(stderr, "IPv4 route: %s/%s via %s dev r-%d metric %u\n", net_str, nm_str, nh_str, rtable[i].interface, rtable[i].metric);
-		DIE(rc != 5, "invalid routing table entry");
-
-		rc = inet_pton(AF_INET, net_str, &rtable[i].network);
-		DIE(rc != 1, "invalid IPv4");
-
-		rc = inet_pton(AF_INET, nm_str, &rtable[i].netmask);
-		DIE(rc != 1, "invalid IPv4");
-
-		rc = inet_pton(AF_INET, nh_str, &rtable[i].nexthop);
-		DIE(rc != 1, "invalid IPv4");
+			if (i == 12)
+				rtable[j].interface = atoi(p);
+			p = strtok(NULL, " .");
+			i++;
+		}
+		j++;
 	}
-
-	fclose(f);
-	fprintf(stderr, "Done parsing routing table.\n");
-
-	return i;
+	return j;
 }

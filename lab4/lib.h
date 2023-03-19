@@ -14,11 +14,10 @@ struct mac_entry {
 };
 
 /* Route Table Entry */
-struct rtable_entry {
-	uint32_t network;
-	uint32_t netmask;
-	uint32_t nexthop;
-	uint32_t metric;
+struct route_table_entry {
+	uint32_t prefix;
+	uint32_t next_hop;
+	uint32_t mask;
 	int interface;
 };
 
@@ -47,7 +46,7 @@ int get_interface_mac(int interface, uint8_t mac[6]);
 /* Extra function */
 size_t read_mac_table(struct mac_entry *mac_table);
 
-size_t read_rtable(struct rtable_entry *rtable);
+int read_rtable(const char *path, struct route_table_entry *rtable);
 
 /* Macro for sanity checks */
 #define DIE(condition, message) \
