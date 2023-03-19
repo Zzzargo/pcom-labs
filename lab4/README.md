@@ -36,11 +36,10 @@ struct mac_entry {
 };
 
 /* Route Table Entry */
-struct rtable_entry {
-	uint32_t network;
-	uint32_t netmask;
-	uint32_t nexthop;
-	uint32_t metric;
+struct route_table_entry {
+	uint32_t prefix;
+	uint32_t next_hop;
+	uint32_t mask;
 	int interface;
 };
 ```
