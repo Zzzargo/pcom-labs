@@ -60,6 +60,8 @@ class NetworkManager(object):
             h_if = get("host_if_name", i)
 
             self.hosts[i].setIP(host_ip, prefixLen=24, intf=h_if)
+            self.router.setIP(get("router_ip", i), prefixLen=24,
+                              intf=get("router_if_name", i))
 
     def setup_macs(self):
         for i, host in enumerate(self.hosts):
