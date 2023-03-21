@@ -24,9 +24,9 @@ struct route_table_entry *get_best_route(uint32_t ip_dest) {
 	return NULL;
 }
 
-struct mac_entry *get_mac_entry(uint32_t ip_dest) {
+struct mac_entry *get_mac_entry(uint32_t given_ip) {
 	/* TODO 2.4: Iterate through the MAC table and search for an entry
-	 * that matches ip_dest. */
+	 * that matches given_ip. */
 
 	/* We can iterate thrpigh the mac_table for (int i = 0; i <
 	 * mac_table_len; i++) */
@@ -36,8 +36,8 @@ struct mac_entry *get_mac_entry(uint32_t ip_dest) {
 int main(int argc, char *argv[])
 {
 	int interface;
-	char buf[MAX_LEN];
-	int len;
+	char packet[MAX_LEN];
+	int packet_len;
 
 	/* Don't touch this */
 	init();
@@ -58,15 +58,15 @@ int main(int argc, char *argv[])
 		/* We call get_packet to receive a packet. get_packet returns
 		the interface it has received the data from. And writes to
 		len the size of the packet. */
-		interface = recv_from_all_links(buf, &len);
+		interface = recv_from_all_links(packet, &packet_len);
 		DIE(interface < 0, "get_message");
 		printf("We have received a packet\n");
 		
 		/* Extract the Ethernet header from the packet. Since protocols are
 		 * stacked, the first header is the ethernet header, the next header is
 		 * at m.payload + sizeof(struct ether_header) */
-		struct ether_header *eth_hdr = (struct ether_header *) buf;
-		struct iphdr *ip_hdr = (struct iphdr *)(buf + sizeof(struct ether_header));
+		struct ether_header *eth_hdr = (struct ether_header *) packet;
+		struct iphdr *ip_hdr = (struct iphdr *)(packet + sizeof(struct ether_header));
 
 		/* TODO 2.1: Check the ip_hdr integrity using ip_checksum(ip_hdr, sizeof(struct iphdr)) */
 
@@ -78,6 +78,6 @@ int main(int argc, char *argv[])
 		 * address. Use get_interface_mac(m.interface, uint8_t *mac) to
 		 * find the mac address of our interface. */
 		  
-		// Call send_to_link(best_router->interface, packet, len);
+		// Call send_to_link(best_router->interface, packet, packet_len);
 	}
 }
