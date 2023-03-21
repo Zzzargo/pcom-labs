@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 		struct ether_header *eth_hdr = (struct ether_header *) packet;
 		struct iphdr *ip_hdr = (struct iphdr *)(packet + sizeof(struct ether_header));
 
-		/* TODO 2.1: Check the ip_hdr integrity using ip_checksum(ip_hdr, sizeof(struct iphdr)) */
+		/* TODO 2.1: Check the ip_hdr integrity using ip_checksum((uint16_t *)ip_hdr, sizeof(struct iphdr)) */
 
 		/* TODO 2.2: Call get_best_route to find the most specific route, continue; (drop) if null */
 
