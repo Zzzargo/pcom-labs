@@ -1,6 +1,10 @@
 #include <unistd.h>
 #include <stdint.h>
 
+#ifndef ETHERTYPE_IP
+#define ETHERTYPE_IP		0x0800	/* IP protocol */
+#endif
+
 struct  ether_header {
     uint8_t  ether_dhost[6];
     uint8_t  ether_shost[6];
