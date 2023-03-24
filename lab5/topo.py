@@ -79,7 +79,7 @@ def run(run_benchmark = False):
     "Test linux router"
     topo = NetworkTopo()
     net = Mininet( topo=topo, link=TCLink,
-                   waitConnected=True )  # controller is used by s1-s3
+                   waitConnected=True, controller=None)  # controller is used by s1-s3
     net.start()
     #print( '*** Routing Table on Router:\n' )
     #print(net[ 'r0' ].cmd( 'route' ))
