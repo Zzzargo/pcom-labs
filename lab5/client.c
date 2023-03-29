@@ -36,12 +36,13 @@ void send_file_start_stop(int sockfd, struct sockaddr_in server_address,
     DIE(n < 0, "read");
     d.len = n;
 
-    if (n == 0) // end of file
-      break;
-
     /* TODO 1.2: Send the datagram. */
 
     /* TODO 1.3: Wait for ACK before moving to the next datagram to send. */
+    
+    if (n == 0) // end of file
+      break;
+
   }
 }
 
