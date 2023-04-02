@@ -20,6 +20,17 @@
 #define SENT_FILENAME "file.bin"
 #define SERVER_IP "172.16.0.100"
 
+#define TICK(X)                                                                \
+  struct timespec X;                                                           \
+  clock_gettime(CLOCK_MONOTONIC_RAW, &X)
+
+#define TOCK(X)                                                                \
+  struct timespec X##_end;                                                     \
+  clock_gettime(CLOCK_MONOTONIC_RAW, &X##_end);                                \
+  printf("Total time = %f seconds\n",                                          \
+         (X##_end.tv_nsec - (X).tv_nsec) / 1000000000.0 +                      \
+             (X##_end.tv_sec - (X).tv_sec))
+
 list *window;
 
 void send_file_start_stop(int sockfd, struct sockaddr_in server_address,
@@ -115,6 +126,10 @@ int main(int argc, char *argv[]) {
   struct sockaddr_in servaddr;
   int sockfd, rc;
 
+  // for benchmarking
+  TICK(TIME_A);
+
+
   /* Our transmission window*/
   window = create_list();
 
@@ -146,6 +161,9 @@ int main(int argc, char *argv[]) {
   // send_file_window(sockfd, servaddr, SENT_FILENAME);
 
   close(sockfd);
+
+  /* Print the runtime of the program */
+  TOCK(TIME_A);
 
   return 0;
 }

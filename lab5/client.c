@@ -14,6 +14,17 @@
 #include "queue.h"
 #include "utils.h"
 
+#define TICK(X)                                                                \
+  struct timespec X;                                                           \
+  clock_gettime(CLOCK_MONOTONIC_RAW, &X)
+
+#define TOCK(X)                                                                \
+  struct timespec X##_end;                                                     \
+  clock_gettime(CLOCK_MONOTONIC_RAW, &X##_end);                                \
+  printf("Total time = %f seconds\n",                                          \
+         (X##_end.tv_nsec - (X).tv_nsec) / 1000000000.0 +                      \
+             (X##_end.tv_sec - (X).tv_sec))
+
 /* Max size of the datagrams that we will be sending */
 #define CHUNKSIZE 1024
 #define SENT_FILENAME "file.bin"
@@ -105,6 +116,9 @@ int main(int argc, char *argv[]) {
   struct sockaddr_in servaddr;
   int sockfd, rc;
 
+  // for benchmarking
+  TICK(TIME_A);
+  
   /* Queue that we will use when implementing sliding window */
   datagram_queue = queue_create();
 
@@ -126,6 +140,9 @@ int main(int argc, char *argv[]) {
   // send_file_start_stop(sockfd, servaddr, SENT_FILENAME);
   // send_file_window(sockfd, servaddr, SENT_FILENAME);
 
+  /* Print the runtime of the program */
+  TOCK(TIME_A);
+  
   close(sockfd);
 
   return 0;

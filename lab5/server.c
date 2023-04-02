@@ -15,17 +15,6 @@
 #include "common.h"
 #include "utils.h"
 
-#define TICK(X)                                                                \
-  struct timespec X;                                                           \
-  clock_gettime(CLOCK_MONOTONIC_RAW, &X)
-
-#define TOCK(X)                                                                \
-  struct timespec X##_end;                                                     \
-  clock_gettime(CLOCK_MONOTONIC_RAW, &X##_end);                                \
-  printf("Total time = %f seconds\n",                                          \
-         (X##_end.tv_nsec - (X).tv_nsec) / 1000000000.0 +                      \
-             (X##_end.tv_sec - (X).tv_sec))
-
 #define SAVED_FILENAME "received_file.bin"
 
 void recv_seq_udp(int sockfd, struct seq_udp *seq_packet) {
@@ -87,9 +76,6 @@ int main(int argc, char *argv[]) {
   int sockfd;
   struct sockaddr_in servaddr;
 
-  // for benchmarking
-  TICK(TIME_A);
-
   // Creating socket file descriptor
   if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
     perror("socket creation failed");
@@ -119,9 +105,6 @@ int main(int argc, char *argv[]) {
   // and save it locally
   recv_a_message(sockfd);
   // recv_a_file(sockfd, SAVED_FILENAME);
-
-  /* Print the runtime of the program */
-  TOCK(TIME_A);
 
   return 0;
 }
