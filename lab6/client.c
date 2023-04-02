@@ -144,7 +144,7 @@ int main(int argc, char *argv[]) {
     
   rc = setsockopt (sockfd, SOL_SOCKET, SO_RCVTIMEO, &timeout,
               sizeof timeout);
-  DIE(rc >= 0, "setsockopt");
+  DIE(rc < 0, "setsockopt");
 
   // Fill the information that will be put into the IP and UDP header to
   // identify the target process (via PORT) on a given host (via SEVER_IP)
