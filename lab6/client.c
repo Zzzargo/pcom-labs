@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/time.h>
+#include <time.h>
 
 #include "common.h"
 #include "utils.h"
