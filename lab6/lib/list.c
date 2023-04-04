@@ -1,5 +1,6 @@
 #include "list.h"
 #include <stdlib.h>
+#include <string.h>
 
 list* create_list() {
 	list* l = (list *)calloc(1, sizeof(list));
