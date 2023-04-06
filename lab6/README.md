@@ -25,6 +25,27 @@ server IP (h2) - 172.160.0.100
 We will use the `sockers API`. We will use a list to represent the window.
 
 ```C
+/* List entry */
+struct cel{
+  void* info;
+  int info_len;
+  int seq;
+  char type;
+  struct cel* next;
+};
+
+typedef struct cel list_entry;
+
+/* Window as a list */
+typedef struct {
+  int size;
+  int max_seq;
+  list_entry* head;
+} list;
+```
+
+
+```C
 list *window = create_list(2000);
 seq_udp p;
 ...
