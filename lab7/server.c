@@ -124,9 +124,9 @@ void run_chat_multi_server(int listenfd) {
 					DIE(newsockfd < 0, "accept");
 
 					// se adauga noul socket intors de accept() la multimea descriptorilor de citire
-                    num_clients++;
                     poll_fds[num_clients].fd = newsockfd;
                     poll_fds[num_clients].events = POLLIN;
+                    num_clients++;
 
 					printf("Noua conexiune de la %s, port %d, socket client %d\n",
 							inet_ntoa(cli_addr.sin_addr), ntohs(cli_addr.sin_port), newsockfd);
@@ -145,7 +145,8 @@ void run_chat_multi_server(int listenfd) {
                         for (int j = i; j < num_clients - 1; j++) {
                             poll_fds[j] = poll_fds[j + 1];
                         }
-                         num_clients--;
+                        
+                        num_clients--;
 
 					} else {
 						printf ("S-a primit de la clientul de pe socketul %d mesajul: %s\n", i, received_packet.message);
