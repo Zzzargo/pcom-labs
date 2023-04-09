@@ -26,7 +26,7 @@ int receive_and_send(int connfd1, int connfd2, size_t len) {
   int bytes_received;
   char buffer[len];
 
-  // TODO 2.1: Foloseste recv_all ca să primești exact len octeti de la connfd1
+  // Primim exact len octeti de la connfd1
   bytes_received = recv_all(connfd1, buffer, len);
   // S-a inchis conexiunea
   if (bytes_received == 0) {
@@ -34,7 +34,7 @@ int receive_and_send(int connfd1, int connfd2, size_t len) {
   }
   DIE(bytes_received < 0, "recv");
 
-  // TODO 2.2: Foloseste send_all ca sa trimiti mesajul catre connfd2
+  // Trimitem mesajul catre connfd2
   int rc = send_all(connfd2, buffer, len);
   if (rc <= 0) {
     perror("send_all");
