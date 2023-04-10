@@ -19,7 +19,7 @@
 #include "common.h"
 #include "helpers.h"
 
-#define MAX_CLIENTS 1000
+#define MAX_CONNECTIONS 32
 
 // Primeste date de pe connfd1 si trimite mesajul receptionat pe connfd2
 int receive_and_send(int connfd1, int connfd2, size_t len) {
@@ -87,8 +87,6 @@ void run_chat_server(int listenfd) {
   close(connfd2);
 }
 
-#define MAX_CONNECTIONS 32
-
 void run_chat_multi_server(int listenfd) {
 
   struct pollfd poll_fds[MAX_CONNECTIONS];
@@ -98,7 +96,7 @@ void run_chat_multi_server(int listenfd) {
   struct chat_packet received_packet;
 
   // Setam socket-ul listenfd pentru ascultare
-  rc = listen(listenfd, MAX_CLIENTS);
+  rc = listen(listenfd, MAX_CONNECTIONS);
   DIE(rc < 0, "listen");
 
   // se adauga noul file descriptor (socketul pe care se asculta conexiuni) in
