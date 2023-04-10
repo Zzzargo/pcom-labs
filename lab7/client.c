@@ -20,8 +20,8 @@
 #include "helpers.h"
 
 void run_client(int sockfd) {
-  char buf[BUFLEN];
-  memset(buf, 0, BUFLEN);
+  char buf[MSG_MAXSIZE + 1];
+  memset(buf, 0, MSG_MAXSIZE + 1);
 
   struct chat_packet sent_packet;
   struct chat_packet recv_packet;

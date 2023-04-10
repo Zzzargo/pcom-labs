@@ -20,7 +20,4 @@
     }                                                                          \
   } while (0)
 
-/* Dimensiunea maxima a calupului de date */
-#define BUFLEN 1500
-
 #endif
