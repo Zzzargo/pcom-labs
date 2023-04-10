@@ -108,7 +108,7 @@ void run_chat_multi_server(int listenfd) {
 
   while (1) {
 
-    rc = poll(poll_fds, num_clients, 0);
+    rc = poll(poll_fds, num_clients, -1);
     DIE(rc < 0, "poll");
 
     for (int i = 0; i < num_clients; i++) {
