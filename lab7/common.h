@@ -12,7 +12,6 @@ int recv_all(int sockfd, void *buff, size_t len);
 
 struct chat_packet {
   uint16_t len;
-  uint32_t destination;
   char message[MSG_MAXSIZE + 1];
 };
 
