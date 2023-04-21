@@ -43,7 +43,7 @@ void run_client(int sockfd) {
       break;
     }
 
-    printf("%s", recv_packet.message);
+    printf("%s\n", recv_packet.message);
   }
 }
 
