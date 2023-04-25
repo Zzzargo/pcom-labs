@@ -22,6 +22,10 @@ def run_iperf_client(target_ip, port):
     return subprocess.Popen(["iperf", "-c", target_ip, "-p", str(port), "-t", "0"])
 
 def update_plot(frame, cwnd_values, throughput_values):
+    # Only keep the last 120 points (max)
+    del cwnd_values[:-120]
+    del throughput_values[:-120]
+    
     cwnd, throughput = get_cwnd_throughput(port)
     if cwnd is not None and throughput is not None:
         cwnd_values.append(cwnd)
