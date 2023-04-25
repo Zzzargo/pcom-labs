@@ -21,21 +21,6 @@ def run_iperf_client(target_ip, port):
     # TODO: Here we change the parameters to the iperf command
     return subprocess.Popen(["iperf", "-c", target_ip, "-p", str(port), "-t", "0"])
 
-def plot_cwnd(cwnd_values):
-    plt.ion()
-    fig, ax = plt.subplots()
-    while True:
-        cwnd = get_cwnd(port)
-        if cwnd is not None:
-            cwnd_values.append(cwnd)
-            ax.clear()
-            ax.plot(cwnd_values)
-            ax.set_xlabel('Time (0.25s intervals)')
-            ax.set_ylabel('Congestion Window Size (cwnd)')
-            ax.set_title('Congestion Window Size vs. Time')
-            plt.pause(0.25)
-
-
 def update_plot(frame, cwnd_values, throughput_values):
     cwnd, throughput = get_cwnd_throughput(port)
     if cwnd is not None and throughput is not None:
