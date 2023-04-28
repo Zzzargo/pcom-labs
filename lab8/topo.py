@@ -41,15 +41,16 @@ class NetworkTopo( Topo ):
         h3 = self.addHost( 'h3', ip='182.17.0.100/12',
                            defaultRoute='via 182.17.0.1' )
 
-        # TODO: 10 Mbps, 1ms delay, 0 packet loss
+        #  10 Mbps, 1ms delay, 0 packet loss
         self.addLink( h1, router, intfName1='r0-eth1', bw=10, delay='1ms', loss=0,
                      params1={ 'ip' : '192.168.1.1/24' })  # for clarity
 
-        # TODO: 10 Mbps, 1ms delay, 0% packet loss
+        #  10 Mbps, 1ms delay, 0% packet loss
         self.addLink( h2, router, intfName2='r0-eth2', bw=10, delay='1ms', loss=0,
                       params2={ 'ip' : '172.16.0.1/12' } )
 
-        # TODO: 10 Mbps, 1ms delay, 0% packet loss
+        #  10 Mbps, 1ms delay, 0% packet loss
+        # TODO: Change to 5ms
         self.addLink( h3, router, intfName2='r0-eth3', bw=10, delay='1ms', loss=0,
                       params2={ 'ip' : '182.17.0.1/12' } )
 
