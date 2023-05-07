@@ -1,6 +1,6 @@
 /*
  * Protocoale de comunicatii
- * Laborator 11 - E-mail
+ * Laborator 10 - E-mail
  * send_mail.c
  */
 

@@ -1,5 +1,5 @@
 // Protocoale de comunicatii
-// Laborator 9 - DNS
+// Laborator 10 - DNS
 // dns.c
 
 #include <stdlib.h>
