@@ -56,6 +56,13 @@ ssize_t read_line(int sockd, void *vptr, size_t maxlen)
     return n;
 }
 
+void error(const char *msg)
+{
+    perror(msg);
+    exit(errno);
+}
+
+
 int open_connection(char *host_ip, int portno, int ip_type, int socket_type, int flag)
 {
     struct sockaddr_in serv_addr;
