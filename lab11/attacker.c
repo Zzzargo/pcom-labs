@@ -194,6 +194,10 @@ int main(int argc, char *argv[])
 			goto forward;
 
 		struct tcp *tcp_hdr = (struct tcp *)(pkt.payload + sizeof(struct ether_header) + sizeof(struct iphdr));
+
+		size_t size = pkt.size - sizeof(struct ether_header)
+			               - ip_hdr->ihl * 4
+				       - tcp_hdr->tcp_hdr_len * 4;
 		fprintf(stderr, "\tIt's a TCP packet from %u to %u!\n",
 				ntohs(tcp_hdr->tcp_src),
 				ntohs(tcp_hdr->tcp_dst));
@@ -213,24 +217,23 @@ int main(int argc, char *argv[])
 
 		char *data = (char *)(pkt.payload + sizeof(struct ether_header)
 				+ ip_hdr->ihl * 4 + tcp_hdr->tcp_hdr_len * 4);
-		size_t size = pkt.size - sizeof(struct ether_header)
-			               - ip_hdr->ihl * 4
-				       - tcp_hdr->tcp_hdr_len * 4;
 		if (size) // ignore empty ACKs and the like
 			handle_tcp_data(pkt.interface, data, size);
 forward:
-		// this is actually quite a bit extra than we need;
-		tcp_hdr->tcp_chk = 0;
-		char tcp_checksum_buffer[sizeof(struct message)];
-		memcpy(tcp_checksum_buffer, &ip_hdr->saddr, 4);
-		memcpy(tcp_checksum_buffer + 4, &ip_hdr->daddr, 4);
-		tcp_checksum_buffer[8] = 0;
-		tcp_checksum_buffer[9] = IPTYPE_TCP;
-		uint16_t tcp_length = size + tcp_hdr->tcp_hdr_len * 4;
-		uint16_t tcp_length_n = htons(tcp_length);
-		memcpy(tcp_checksum_buffer + 10, &tcp_length_n, 2);
-		memcpy(tcp_checksum_buffer + 12, tcp_hdr, tcp_length);
-		tcp_hdr->tcp_chk = htons(checksum((uint16_t *)tcp_checksum_buffer, tcp_length + 12));
+		if (ip_hdr->protocol == IPTYPE_TCP) {
+			// this is actually quite a bit extra than we need;
+			tcp_hdr->tcp_chk = 0;
+			char tcp_checksum_buffer[sizeof(struct message)];
+			memcpy(tcp_checksum_buffer, &ip_hdr->saddr, 4);
+			memcpy(tcp_checksum_buffer + 4, &ip_hdr->daddr, 4);
+			tcp_checksum_buffer[8] = 0;
+			tcp_checksum_buffer[9] = IPTYPE_TCP;
+			uint16_t tcp_length = size + tcp_hdr->tcp_hdr_len * 4;
+			uint16_t tcp_length_n = htons(tcp_length);
+			memcpy(tcp_checksum_buffer + 10, &tcp_length_n, 2);
+			memcpy(tcp_checksum_buffer + 12, tcp_hdr, tcp_length);
+			tcp_hdr->tcp_chk = htons(checksum((uint16_t *)tcp_checksum_buffer, tcp_length + 12));
+		}
 
 		uint8_t mac[6];
 		get_interface_mac(out_interface, mac);

@@ -51,12 +51,16 @@ void run_server(int sockfd) {
 
 uint32_t *obtain_key_plain(int sockfd)
 {
-	// TODO 5. Get the key from Alice
+	// TODO 5. Get the key from Alice.
+	return NULL;
 }
 
 uint32_t *obtain_key_dh(int sockfd)
 {
-	// TODO 7. Perform DH using the primitives in "include/dh.h"
+	// TODO 7. Perform DH using the primitives in "include/dh.h". Use derive_key with the
+	// secret as argument. We do this because the key and the secret don't necessarly have
+	// the same size or structure.
+	return NULL;
 }
 
 void run_secure_server(int sockfd)

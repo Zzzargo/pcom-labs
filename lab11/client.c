@@ -50,12 +50,16 @@ void run_client(int sockfd) {
 
 uint32_t *obtain_key_plain(int sockfd)
 {
-	// TODO 5. Generate the key and send it to Bob.
+	// TODO 5. Generate the key and send it to Bob. Use create_key from tea.h
+	return NULL;
 }
 
 uint32_t *obtain_key_dh(int sockfd)
 {
-	// TODO 7. Perform DH using the primitives in "include/dh.h"
+	// TODO 7. Perform DH using the primitives in "include/dh.h". Use derive_key with the
+	// secret as argument. We do this because the key and the secret don't necessarly have
+	// the same size or structure.
+	return NULL;
 }
 
 void run_encryption_client(int sockfd) {
@@ -106,8 +110,9 @@ int main(int argc, char *argv[])
 	rc = connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
 	DIE(rc < 0, "connect");
 
-	/*run_client(sockfd);*/
-	run_encryption_client(sockfd);
+	run_client(sockfd);
+	// TODO 5: We will now use the run_ecryption_client
+	//run_encryption_client(sockfd);
 
 	// Inchidem conexiunea si socketul creat
 	close(sockfd);
