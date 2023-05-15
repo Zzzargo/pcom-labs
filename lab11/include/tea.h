@@ -1,4 +1,4 @@
-ifndef TEA_H
+#ifndef TEA_H
 #define TEA_H
 
 #include <stdint.h>
