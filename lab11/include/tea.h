@@ -1,4 +1,4 @@
-#ifndef TEA_H
+ifndef TEA_H
 #define TEA_H
 
 #include <stdint.h>
@@ -10,6 +10,7 @@
 uint8_t *encrypt(uint8_t *plaintext, uint32_t *size, const uint32_t *k);
 uint8_t *decrypt(uint8_t *cipher, uint32_t *size, const uint32_t *k);
 
+/* Creates a secret key K. The key has size sizeof(uint32_t) * 4 */
 uint32_t *create_key();
 void destroy_key(uint32_t *k);
 
