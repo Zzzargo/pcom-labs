@@ -67,8 +67,8 @@ void run_encryption_client(int sockfd) {
 	struct message msg;
 
 	// TODO 3. Comment this and uncomment the next line
-	/*uint32_t *key = obtain_key_plain(sockfd);*/
-	uint32_t *key = obtain_key_dh(sockfd);
+	uint32_t *key = obtain_key_plain(sockfd);
+	/*uint32_t *key = obtain_key_dh(sockfd);*/
 	while (1) {
 		// TODO 1. just like run_client, read a string, send it to the
 		// sever, then receive a reply and print it
@@ -110,9 +110,9 @@ int main(int argc, char *argv[])
 	rc = connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
 	DIE(rc < 0, "connect");
 
+	// TODO 1: Comment run_client and uncomment run_ecryption_client
 	run_client(sockfd);
-	// TODO 1: We will now use the run_ecryption_client
-	//run_encryption_client(sockfd);
+	/*run_encryption_client(sockfd);*/
 
 	// Inchidem conexiunea si socketul creat
 	close(sockfd);

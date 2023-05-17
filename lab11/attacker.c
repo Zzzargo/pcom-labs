@@ -133,9 +133,9 @@ void handle_tcp_data(int source, char *data, size_t size)
 		DIE(bytes_read + size > msg_size, "Malformed message!");
 		memcpy(msg + bytes_read, data, size);
 		bytes_read += size;
-		/*handle_message(source, msg, msg_size);*/
+		handle_message(source, msg, msg_size);
 		/*handle_encrypted_message(source, msg, msg_size);*/
-		handle_dh_message(source, msg, msg_size);
+		/*handle_dh_message(source, msg, msg_size);*/
 		memcpy(data, msg, msg_size);
 		if (bytes_read == msg_size) {
 			// reset, for the next message
