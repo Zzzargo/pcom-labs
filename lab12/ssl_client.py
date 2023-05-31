@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import socket, ssl, sys, pprint
+
 # Primim ca argument hostname-ul serverului, de exemplu google.com
 hostname = sys.argv[1]
 
@@ -16,15 +17,15 @@ cadir = '/etc/ssl/certs'
 
 # Set up the TLS context
 context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-#context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2) # For Ubuntu 16.04
+# context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2) # For Ubuntu 16.04
 context.load_verify_locations(capath=cadir)
 context.verify_mode = ssl.CERT_REQUIRED
 context.check_hostname = True
 
 # Add the TLS
 ssock = context.wrap_socket(sock, server_hostname=hostname,
-do_handshake_on_connect=False)
-ssock.do_handshake() # Start the handshake
+                            do_handshake_on_connect=False)
+ssock.do_handshake()  # Start the handshake
 pprint.pprint(ssock.getpeercert())
 
 input("After handshake. Press any key to continue ...")
