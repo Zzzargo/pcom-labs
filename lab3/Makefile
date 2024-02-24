@@ -1,21 +1,21 @@
-CFLAGS= -Wall -Werror -Wno-error=unused-variable
+CFLAGS= -Wall -Werror -Wno-error=unused-variable -I../common/
 
 all: send recv
+
+../common/utils.o:
+		$(MAKE) -C ../common
 
 link_emulator/lib.o:
 	$(MAKE) -C link_emulator
 
-send: send.o link_emulator/lib.o common.o
-	gcc $(CFLAGS) -g send.o link_emulator/lib.o common.o -o send
+send: send.o link_emulator/lib.o common.o ../common/utils.o
 
-recv: recv.o link_emulator/lib.o common.o
-	gcc $(CFLAGS) -g recv.o link_emulator/lib.o common.o -o recv
+recv: recv.o link_emulator/lib.o common.o ../common/utils.o
 
 common.o: common.c common.h
-
-.c.o:
-	gcc $(CFLAGS) -g -c $?
 
 clean:
 	$(MAKE) -C link_emulator clean
 	-rm -f *.o send recv common.h.gch
+
+.PHONY: all clean

@@ -6,7 +6,14 @@
 #include <arpa/inet.h>
 #include "common.h"
 #include "link_emulator/lib.h"
+#include "include/utils.h"
 
+/**
+ * You can change these to communicate with another colleague.
+ * There are several factors that could stop this from working over the
+ * internet, but if you're on the same network it should work.
+ * Just fill in their IP here and make sure that you use the same port.
+ */
 #define HOST "127.0.0.1"
 #define PORT 10001
 
@@ -19,10 +26,7 @@ int main(int argc,char** argv) {
 
 	/* Receive the frame from the link */
 	int len = link_recv(&t, sizeof(struct l3_msg));
-	if (len < 0){
-		perror("Receive message");
-		return -1;
-	}
+	DIE(len < 0, "Receive message");
 
 	/* We have to convert it to host order */
 	uint32_t recv_sum = ntohl(t.hdr.sum);

@@ -4,14 +4,20 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "link_emulator/lib.h"
+#include "include/utils.h"
 
-/* Do not touch these two */
+/**
+ * You can change these to communicate with another colleague.
+ * There are several factors that could stop this from working over the
+ * internet, but if you're on the same network it should work.
+ * Just fill in their IP here and make sure that you use the same port.
+ */
 #define HOST "127.0.0.1"
 #define PORT 10001
 
 #include "common.h"
 
-/* Our unqiue layer 2 ID */
+/* Our unique layer 2 ID */
 static int ID = 123131;
 
 /* Function which our protocol implementation will provide to the upper layer. */
@@ -32,10 +38,11 @@ int recv_frame(char *buf, int size)
 }
 
 int main(int argc,char** argv){
-	/* Do not touch this */
+	/* Don't modify this */
 	init(HOST,PORT);
 
-
+        // TODO remove these recives, whih are hardcoded to receive a "Hello"
+	// message, and replace them with code that can receive any message.
 	char c;
 
 	/* Wait for the start of a frame */

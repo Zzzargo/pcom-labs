@@ -6,8 +6,14 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "link_emulator/lib.h"
+#include "include/utils.h"
 
-/* We don't touch this */
+/**
+ * You can change these to communicate with another colleague.
+ * There are several factors that could stop this from working over the
+ * internet, but if you're on the same network it should work.
+ * Just fill in their IP here and make sure that you use the same port.
+ */
 #define HOST "127.0.0.1"
 #define PORT 10000
 
@@ -38,6 +44,8 @@ int main(int argc,char** argv){
 	// Don't touch this
 	init(HOST,PORT);
 
+	// TODO remove these sends, whih are hardcoded to send a "Hello"
+	// message, and replace them with code that can send any message.
 	/* Send Hello */
 	send_byte(DLE);
 	send_byte(STX);

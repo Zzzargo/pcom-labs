@@ -8,6 +8,7 @@
 #include "common.h"
 #include "link_emulator/lib.h"
 #include <arpa/inet.h>
+#include "include/utils.h"
 
 #define HOST "127.0.0.1"
 #define PORT 10000
