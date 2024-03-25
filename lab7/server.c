@@ -64,18 +64,17 @@ void run_chat_server(int listenfd) {
   DIE(connfd1 < 0, "accept");
 
   printf("Astept connectarea clientului 2...\n");
-
   connfd2 = accept(listenfd, (struct sockaddr *)&client_addr2, &clen2);
   DIE(connfd2 < 0, "accept");
 
   while (1) {
-    // Primim de la primul client, trimitem catre al 2lea
     printf("Primesc de la 1 si trimit catre 2...\n");
     int rc = receive_and_send(connfd1, connfd2, sizeof(struct chat_packet));
     if (rc <= 0) {
       break;
     }
 
+    printf("Primesc de la 2 si trimit catre 1...\n");
     rc = receive_and_send(connfd2, connfd1, sizeof(struct chat_packet));
     if (rc <= 0) {
       break;
@@ -90,7 +89,7 @@ void run_chat_server(int listenfd) {
 void run_chat_multi_server(int listenfd) {
 
   struct pollfd poll_fds[MAX_CONNECTIONS];
-  int num_clients = 1;
+  int num_sockets = 1;
   int rc;
 
   struct chat_packet received_packet;
@@ -99,55 +98,57 @@ void run_chat_multi_server(int listenfd) {
   rc = listen(listenfd, MAX_CONNECTIONS);
   DIE(rc < 0, "listen");
 
-  // se adauga noul file descriptor (socketul pe care se asculta conexiuni) in
-  // multimea read_fds
+  // Adaugam noul file descriptor (socketul pe care se asculta conexiuni) in
+  // multimea poll_fds
   poll_fds[0].fd = listenfd;
   poll_fds[0].events = POLLIN;
 
-  while (1) {
+  /*
+    TODO 3: Adaugati un timerfd. Read-ul pe el se va debloca periodic, moment
+    in care veti trimite anuntul promotional catre toti clientii.
+  */
 
-    rc = poll(poll_fds, num_clients, -1);
+  while (1) {
+    // Asteptam sa primim ceva pe unul dintre cei num_sockets socketi
+    rc = poll(poll_fds, num_sockets, -1);
     DIE(rc < 0, "poll");
 
-    for (int i = 0; i < num_clients; i++) {
+    for (int i = 0; i < num_sockets; i++) {
       if (poll_fds[i].revents & POLLIN) {
         if (poll_fds[i].fd == listenfd) {
-          // a venit o cerere de conexiune pe socketul inactiv (cel cu listen),
-          // pe care serverul o accepta
+          // Am primit o cerere de conexiune pe socketul de listen, pe care
+          // o acceptam
           struct sockaddr_in cli_addr;
           socklen_t cli_len = sizeof(cli_addr);
-          int newsockfd =
+          const int newsockfd =
               accept(listenfd, (struct sockaddr *)&cli_addr, &cli_len);
           DIE(newsockfd < 0, "accept");
 
-          // se adauga noul socket intors de accept() la multimea descriptorilor
+          // Adaugam noul socket intors de accept() la multimea descriptorilor
           // de citire
-          poll_fds[num_clients].fd = newsockfd;
-          poll_fds[num_clients].events = POLLIN;
-          num_clients++;
+          poll_fds[num_sockets].fd = newsockfd;
+          poll_fds[num_sockets].events = POLLIN;
+          num_sockets++;
 
           printf("Noua conexiune de la %s, port %d, socket client %d\n",
                  inet_ntoa(cli_addr.sin_addr), ntohs(cli_addr.sin_port),
                  newsockfd);
         } else {
-          // s-au primit date pe unul din socketii de client,
-          // asa ca serverul trebuie sa le receptioneze
+          // Am primit date pe unul din socketii de client, asa ca le receptionam
           int rc = recv_all(poll_fds[i].fd, &received_packet,
                             sizeof(received_packet));
           DIE(rc < 0, "recv");
 
           if (rc == 0) {
-            // conexiunea s-a inchis
             printf("Socket-ul client %d a inchis conexiunea\n", i);
             close(poll_fds[i].fd);
 
-            // se scoate din multimea de citire socketul inchis
-            for (int j = i; j < num_clients - 1; j++) {
+            // Scoatem din multimea de citire socketul inchis
+            for (int j = i; j < num_sockets - 1; j++) {
               poll_fds[j] = poll_fds[j + 1];
             }
 
-            num_clients--;
-
+            num_sockets--;
           } else {
             printf("S-a primit de la clientul de pe socketul %d mesajul: %s\n",
                    poll_fds[i].fd, received_packet.message);
@@ -171,7 +172,7 @@ int main(int argc, char *argv[]) {
   DIE(rc != 1, "Given port is invalid");
 
   // Obtinem un socket TCP pentru receptionarea conexiunilor
-  int listenfd = socket(AF_INET, SOCK_STREAM, 0);
+  const int listenfd = socket(AF_INET, SOCK_STREAM, 0);
   DIE(listenfd < 0, "socket");
 
   // Completăm in serv_addr adresa serverului, familia de adrese si portul
@@ -181,7 +182,8 @@ int main(int argc, char *argv[]) {
 
   // Facem adresa socket-ului reutilizabila, ca sa nu primim eroare in caz ca
   // rulam de 2 ori rapid
-  int enable = 1;
+  // Vezi https://stackoverflow.com/questions/3229860/what-is-the-meaning-of-so-reuseaddr-setsockopt-option-linux
+  const int enable = 1;
   if (setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0)
     perror("setsockopt(SO_REUSEADDR) failed");
 
@@ -195,8 +197,11 @@ int main(int argc, char *argv[]) {
   rc = bind(listenfd, (const struct sockaddr *)&serv_addr, sizeof(serv_addr));
   DIE(rc < 0, "bind");
 
+  /*
+    TODO 2.1: Folositi implementarea cu multiplexare
+  */
   run_chat_server(listenfd);
-  //run_chat_multi_server(listenfd);
+  // run_chat_multi_server(listenfd);
 
   // Inchidem listenfd
   close(listenfd);

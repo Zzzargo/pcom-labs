@@ -27,17 +27,20 @@ void run_client(int sockfd) {
   struct chat_packet sent_packet;
   struct chat_packet recv_packet;
 
-  /* TODO 2.2: Multiplexeaza intre citirea de la tastatura si primirea unui
-     mesaj, ca sa nu mai fie impusa ordinea.
+  /*
+    TODO 2.2: Multiplexati intre citirea de la tastatura si primirea unui
+    mesaj, ca sa nu mai fie impusa ordinea.
+
+    Hint: server::run_multi_chat_server
   */
   while (fgets(buf, sizeof(buf), stdin) && !isspace(buf[0])) {
     sent_packet.len = strlen(buf) + 1;
     strcpy(sent_packet.message, buf);
 
-    // Use send_all function to send the pachet to the server.
+    // Trimitem pachetul la server.
     send_all(sockfd, &sent_packet, sizeof(sent_packet));
 
-    // Receive a message and show it's content
+    // Primim un mesaj de la server si il afisam.
     int rc = recv_all(sockfd, &recv_packet, sizeof(recv_packet));
     if (rc <= 0) {
       break;
@@ -48,8 +51,6 @@ void run_client(int sockfd) {
 }
 
 int main(int argc, char *argv[]) {
-  int sockfd = -1;
-
   if (argc != 3) {
     printf("\n Usage: %s <ip> <port>\n", argv[0]);
     return 1;
@@ -61,7 +62,7 @@ int main(int argc, char *argv[]) {
   DIE(rc != 1, "Given port is invalid");
 
   // Obtinem un socket TCP pentru conectarea la server
-  sockfd = socket(AF_INET, SOCK_STREAM, 0);
+  const int sockfd = socket(AF_INET, SOCK_STREAM, 0);
   DIE(sockfd < 0, "socket");
 
   // Completăm in serv_addr adresa serverului, familia de adrese si portul
