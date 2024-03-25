@@ -21,7 +21,7 @@ client: client.c include/utils.h lib/queue.o lib/list.o
 
 # Construieste un fisier de 1MB (1024B*10^4)==1MB
 random_file:
-	dd if=/dev/urandom of=file.bin bs=1024 count=100
+	dd if=/dev/urandom of=file.bin bs=1024 count=1000
 
 run_benchmark: server client
 	./server &
