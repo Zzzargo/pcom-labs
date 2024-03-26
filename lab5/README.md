@@ -14,7 +14,7 @@ Topology:
 client <--> router <--> server
 
 Link 1 - 10 Mbps, 5ms delay, 0% packet loss (parameters set at topo.py:57)
-Link 2 - 10 Mbps, 5ms delay, 0% packet loss (parameters set at topo.py:60)a
+Link 2 - 10 Mbps, 5ms delay, 0% packet loss (parameters set at topo.py:60)
 
 
 client IP (h1) - 192.168.1.100
@@ -37,6 +37,8 @@ t = queue_deq(datagram_queue)
 Our protocol implementation will have the following datagram structure over UDP:
 
 ```C
+#define MAXSIZE 1024
+
 struct seq_udp {    
   uint32_t len;    
   char payload[MAXSIZE];    
@@ -60,7 +62,7 @@ the server from `h2`.
 
 To run a benchmark, use:
 ```bash
-make run_benchmark
+sudo python3 topo.py benchmark
 ```
 
 ## C++
