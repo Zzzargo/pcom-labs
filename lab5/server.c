@@ -73,7 +73,7 @@ void recv_a_message(int sockfd) {
   DIE(rc < 0, "send");
 }
 
-int main(int argc, char *argv[]) {
+int main(void) {
   int sockfd;
   struct sockaddr_in servaddr;
 

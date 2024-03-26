@@ -110,7 +110,7 @@ void send_a_message(int sockfd, struct sockaddr_in server_address) {
   rc = recvfrom(sockfd, &ack, sizeof(ack), 0, NULL, NULL);
 }
 
-int main(int argc, char *argv[]) {
+int main(void) {
 
   /* We use this structure to store the server info. IP address and Port.
    * This will be written by the UDP implementation into the header */
