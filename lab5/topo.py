@@ -21,6 +21,7 @@ from mininet.node import Node
 from mininet.log import setLogLevel, info
 from mininet.cli import CLI
 from mininet.link import TCLink
+import time
 import sys
 
 class LinuxRouter( Node ):
@@ -68,11 +69,13 @@ class NetworkManager(object):
 
     def run_benchmark(self):
         server = self.h2.popen("./server", shell=True)
+        # Give server some time to start
+        time.sleep(1)
         client = self.h1.popen("./client", shell=True)
 
         server.wait()
         print("##### Benchmark results #####")
-        print(server.stdout.read().decode().strip())
+        print(client.stdout.read().decode().strip())
         print("#############################")
 
 def run(run_benchmark = False):
