@@ -24,6 +24,7 @@ void recv_seq_udp(int sockfd, struct seq_udp *seq_packet) {
   /* Receive the contents of the file */
   int rc = recvfrom(sockfd, seq_packet, sizeof(struct seq_udp), 0,
                     (struct sockaddr *)&client_addr, &clen);
+  DIE(rc < 0, "recvfrom");
 
   int ack = 0;
   // Sending ACK. We model ACK as datagrams with only an int of value 0.
