@@ -14,8 +14,8 @@ Topology:
         L1          L2
 client <--> router <--> server
 
-Link 1 - 10 Mbps, 5ms delay, 20% packet loss (parameters set at topo.py:57)
-Link 2 - 10 Mbps, 5ms delay, 20% packet loss (parameters set at topo.py:60)
+Link 1 - 10 Mbps, 5ms delay, 10% packet loss (parameters set at topo.py:57)
+Link 2 - 10 Mbps, 5ms delay, 10% packet loss (parameters set at topo.py:60)
 
 
 client IP (h1) - 192.168.1.100
@@ -46,7 +46,7 @@ typedef struct {
 
 
 ```C
-list *window = create_list(2000);
+list *window = create_list();
 seq_udp p;
 ...
 add_list_elem(list* window, &p, sizeof(struct seq_udp), p.seq);
@@ -66,7 +66,7 @@ struct seq_udp {
 To compile the code
 ```bash
 make
-# to create a random file of 1MB called file.bin
+# to create a random file of 100KB called file.bin
 make random_file
 ```
 
@@ -74,8 +74,8 @@ This will create two binaries, to run them:
 ```bash
 sudo python3 topo.py
 ```
-It will open several terminals. We will run the client from `h1` and
-the server from `h2`.
+It will open several terminals. We will run the server from `h2` and
+the client from `h1`.
 
 ## C++
 Note, if you want to use C++, simply change the extension of `client.c` and
