@@ -53,8 +53,8 @@ void send_file_start_stop(int sockfd, struct sockaddr_in server_address,
 
     /* TODO 1.2: Send the datagram. */
 
-    /* TODO 1.3: Wait for ACK before moving to the next datagram to send. If
-     * timeout, resend the datagram. */
+    /* TODO 1.3: Wait for ACK before moving to the next datagram to send.
+    If timeout or wrong seq number, resend the datagram. */
 
     if (n == 0) // end of file
       break;

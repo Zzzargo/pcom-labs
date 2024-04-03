@@ -28,11 +28,12 @@ int recv_seq_udp(int sockfd, struct seq_udp *seq_packet, int expected_seq) {
   /* TODO: Check if the sequence number is the expected one. */
 
   /* TODO: If we got the expected packet (by seq) send ACK for the seq.packet
-     and return the number of bytes read. We will increse expected_seq in the
-     calling function (recv_a_file(...)) */
+     and return the number of bytes read. 
+     
+     We will increase expected_seq in the calling function (recv_a_file(...)) */
 
   /* TODO: If segment is not with the expected number, send ACK
-     for the last well received packet (expected_seq - 1) */
+     for the last well received packet (expected_seq - 1) and return -1  */
 }
 
 void recv_a_file(int sockfd, char *filename) {
