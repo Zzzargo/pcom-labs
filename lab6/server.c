@@ -25,19 +25,14 @@ int recv_seq_udp(int sockfd, struct seq_udp *seq_packet, int expected_seq) {
   int rc = recvfrom(sockfd, seq_packet, sizeof(struct seq_udp), 0,
                     (struct sockaddr *)&client_addr, &clen);
 
-  /* TODO: Check if the sequence number is the expected one. if yes,
-     increase the expected sequence number after sending the ACK
-     return the number of bytes  read.
+  /* TODO: Check if the sequence number is the expected one. */
+
+  /* TODO: If we got the expected packet (by seq) send ACK for the seq.packet
+     and return the number of bytes read. We will increse expected_seq in the
+     calling function (recv_a_file(...)) */
 
   /* TODO: If segment is not with the expected number, send ACK
-     with expected seqence number and return -1 */
-
-  int ack = 0;
-
-  // TODO: Sending ACK with expected sequence number */
-  rc = sendto(sockfd, &ack, sizeof(ack), 0, (struct sockaddr *)&client_addr,
-              clen);
-  DIE(rc < 0, "send");
+     for the last well received packet (expected_seq - 1) */
 }
 
 void recv_a_file(int sockfd, char *filename) {
@@ -51,9 +46,11 @@ void recv_a_file(int sockfd, char *filename) {
     /* Receive a chunk */
     rc = recv_seq_udp(sockfd, &p, expected_seq);
 
-    /* TODO: If rc == -1 => we didn't receive the expected segment. We continue */
+    /* TODO: If rc == -1 => we didn't receive the expected segment. We continue
+     */
 
-    /* TODO: If rc >=0 => we receive the expected segment. We increase expected_seq */
+    /* TODO: If rc >=0 => we receive the expected segment. We increase
+     * expected_seq */
 
     /* An empty payload means the file ended.
     Break if file ended */
@@ -86,7 +83,7 @@ void recv_a_message(int sockfd) {
   DIE(rc < 0, "send");
 }
 
-int main(int argc, char *argv[]) {
+int main(void) {
   int sockfd;
   struct sockaddr_in servaddr;
 

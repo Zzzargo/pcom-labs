@@ -17,7 +17,7 @@ client: client.c include/utils.h lib/list.o
 
 .PHONY: clean run_client run_server random_file
 
-# Construieste un fisier de 1MB (1024B*10^4)==1MB
+# Construieste un fisier de 100KB (1024B*10^2)==1KB
 random_file:
 	dd if=/dev/urandom of=file.bin bs=1024 count=100
 

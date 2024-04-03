@@ -53,12 +53,12 @@ class NetworkTopo( Topo ):
         h2 = self.addHost( 'h2', ip='172.16.0.100/12',
                            defaultRoute='via 172.16.0.1' )
 
-        # 10 Mbps, 5ms delay, 10% packet loss
-        self.addLink( h1, router, intfName1='r0-eth1', bw=10, delay='5ms', loss=10,
+        # 10 Mbps, 10ms delay, 10% packet loss
+        self.addLink( h1, router, intfName1='r0-eth1', bw=10, delay='10ms', loss=10,
                      params1={ 'ip' : '192.168.1.1/24' })  # for clarity
 
-        # 10 Mbps, 5ms delay, 10% packet loss
-        self.addLink( h2, router, intfName2='r0-eth2', bw=10, delay='5ms', loss=10,
+        # 10 Mbps, 10ms delay, 10% packet loss
+        self.addLink( h2, router, intfName2='r0-eth2', bw=10, delay='10ms', loss=10,
                       params2={ 'ip' : '172.16.0.1/12' } )
 
 class NetworkManager(object):

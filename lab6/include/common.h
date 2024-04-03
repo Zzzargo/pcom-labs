@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define MAXSIZE 128
+#define MAXSIZE 1024
 #define PORT 8313
 
 struct seq_udp {
