@@ -84,6 +84,6 @@ sudo pkill ovs-test
 sudo python3 topo.py
 ```
 
-To start the `server`, in the `server` device, simply run `./server 192.168.0.1 [PORT]`.
+To start the `server`, in the `server` device, simply run `./server 192.168.0.2 [PORT]`.
 
-To start a client, in a `client#` device, simply run `./client 192.168.0.1 [PORT]`.
+To start a client, in a `client#` device, simply run `./client 192.168.0.2 [PORT]`.

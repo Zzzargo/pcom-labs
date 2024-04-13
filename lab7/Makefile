@@ -9,7 +9,7 @@ CFLAGS = -Wall -g -Werror -Wno-error=unused-variable
 PORT = 12345
 
 # Adresa IP a serverului
-IP_SERVER = 127.0.0.1
+IP_SERVER = 192.168.0.2
 
 all: server client
 
