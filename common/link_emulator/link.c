@@ -306,10 +306,10 @@ void *run_forwarding(void *param)
 
 				if (rand() % 100 < corrupt2) {
 					// flip a second bit in the same byte
-					int random_bit2;
-					do {
-						random_bit2 = rand();
-					} while (random_bit2 == random_bit);
+					int random_bit2 = rand();
+					if(random_bit % 8 == random_bit2 % 8) {
+						random_bit2 += 1;
+					}
 					m->payload[random_byte] ^=
 						1 << (random_bit2 % 8);
 				}
