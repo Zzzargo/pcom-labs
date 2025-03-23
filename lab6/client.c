@@ -51,9 +51,9 @@ void send_file_start_stop(int sockfd, struct sockaddr_in server_address,
     d.seq = seq;
     seq++;
 
-    /* TODO 1.2: Send the datagram. */
+    /* TODO 1.1: Send the datagram. */
 
-    /* TODO 1.3: Wait for ACK before moving to the next datagram to send.
+    /* TODO 1.2: Wait for ACK before moving to the next datagram to send.
     If timeout or wrong seq number, resend the datagram. */
 
     if (n == 0) // end of file
@@ -74,9 +74,7 @@ void send_file_go_back_n(int sockfd, struct sockaddr_in server_address,
 
   int seq = 1;
   while (1) {
-    /* TODO: 1.1 Read all the data of the and add it as datagrams in
-     * datagram_queue */
-    /* Reads the content of a file */
+    /* Read the entire file in chunks and add them into a list of seq_udp (window) */
     struct seq_udp *d = malloc(sizeof(struct seq_udp));
     DIE(d == NULL, "malloc");
 
