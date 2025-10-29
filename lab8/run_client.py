@@ -50,7 +50,7 @@ def update_plot(frame, cwnd_values, throughput_values):
         ax2.yaxis.set_minor_locator(ticker.MultipleLocator(1))
 
 if __name__ == "__main__":
-    target_ip = "172.16.0.100"
+    target_ip = "192.168.2.100"
     port = 5001
 
     cwnd_values = []
