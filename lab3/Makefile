@@ -1,4 +1,4 @@
-CFLAGS= -Wall -Werror -Wno-error=unused-variable -I../common/
+CFLAGS= -Wall -Werror -Wno-error=unused-variable -I../common/ -MMD -MP
 
 all: send recv
 
@@ -14,8 +14,11 @@ recv: recv.o link_emulator/lib.o common.o ../common/utils.o
 
 common.o: common.c common.h
 
+# Include auto-generated dependency files (silently ignored on first build)
+-include $(wildcard *.d)
+
 clean:
 	$(MAKE) -C link_emulator clean
-	-rm -f *.o send recv common.h.gch
+	-rm -f *.o *.d send recv common.h.gch
 
 .PHONY: all clean
