@@ -55,6 +55,15 @@ h3 <------>(r-3)|--------|(r-2) <---------> h2
 
 r-1, r-2, r-3, r-4 interfaces
 ```
+
+## IP adresses
+```
+host0 - 192.168.0.2
+host1 - 192.168.1.2
+host2 - 192.168.2.2
+host3 - 192.168.3.2
+```
+
 ## Usage
 
 To compile the code
