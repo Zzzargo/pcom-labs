@@ -46,6 +46,7 @@ def update_plot(frame, cwnd_values, throughput_values):
         ax2.set_title('Throughput vs. Time')
         ax2.set_ylim(bottom=0)
         ax2.grid(visible=True, axis='y', linestyle=':')
+        # Comment the next 2 lines if you get an error about exceeding Locator.MAXTICKS
         ax2.yaxis.set_major_locator(ticker.MultipleLocator(2))
         ax2.yaxis.set_minor_locator(ticker.MultipleLocator(1))
 
