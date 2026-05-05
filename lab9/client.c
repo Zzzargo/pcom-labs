@@ -15,18 +15,19 @@ int main(int argc, char *argv[])
     char *response;
     int sockfd;
 
-        
-    // Ex 1.1: GET dummy from main server
-    // Ex 1.2: POST dummy and print response from main server
-    // Ex 2: Login into main server
-    // Ex 3: GET weather key from main server
-    // Ex 4: GET weather data from OpenWeather API
-    // Ex 5: POST weather data for verification to main server
-    // Ex 6: Logout from main server
+    // TODO: Take a look into requests.c (there are some TODOs also)
 
-    // BONUS: make the main server return "Already logged in!"
+    // TODO Ex 1.1: GET dummy from main server
+    // TODO Ex 1.2: POST dummy and print response from main server
+    // TODO Ex 2: Login into main server
+    // TODO Ex 3: GET weather key from main server
+    // TODO Ex 4: GET weather data from OpenWeather API
+    // TODO Ex 5: POST weather data for verification to main server
+    // TODO Ex 6: Logout from main server
 
-    // free the allocated data at the end!
+    // TODO BONUS: make the main server return "Already logged in!"
+
+    // TODO free the allocated data at the end!
 
     return 0;
 }
