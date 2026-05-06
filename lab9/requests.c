@@ -24,7 +24,7 @@ char *compute_get_request(char *host, char *url, char *query_params,
 
     compute_message(message, line);
 
-    // Step 2: add the host
+    // TODO Step 2: add the host
     // Step 3 (optional): add headers and/or cookies, according to the protocol format
     if (cookies != NULL) {
        
@@ -45,15 +45,15 @@ char *compute_post_request(char *host, char *url, char* content_type, char **bod
     sprintf(line, "POST %s HTTP/1.1", url);
     compute_message(message, line);
     
-    // Step 2: add the host
-    /* Step 3: add necessary headers (Content-Type and Content-Length are mandatory)
+    // TODO Step 2: add the host
+    /* TODO Step 3: add necessary headers (Content-Type and Content-Length are mandatory)
             in order to write Content-Length you must first compute the message size
     */
-    // Step 4 (optional): add cookies
+    // TODO Step 4 (optional): add cookies
     if (cookies != NULL) {
        
     }
-    // Step 5: add new line at end of header
+    // TODO Step 5: add new line at end of header
 
     // Step 6: add the actual payload data
     memset(line, 0, LINELEN);

@@ -7,15 +7,51 @@ import numpy as np
 import matplotlib.ticker as ticker
 
 def get_cwnd_throughput(port):
-    result = subprocess.run(["ss", "-tin", f'sport = :{port} or dport = :{port}'], stdout=subprocess.PIPE)
+    result = subprocess.run(
+        ["ss", "-tin", f"sport = :{port} or dport = :{port}"],
+        stdout=subprocess.PIPE
+    )
     output = result.stdout.decode("utf-8")
+
+    # Extract cwnd
     cwnd_regex = re.compile(r"cwnd:(\d+)")
     cwnd = cwnd_regex.findall(output)
-    
-    throughput_regex = re.compile(r"send (\d+\.?\d+?)M?bps")
-    throughput = throughput_regex.findall(output)
 
-    return (int(cwnd[0]), float(throughput[0]) / 10**6) if cwnd and throughput else (None, None)
+    # Extract throughput from "send ..."
+    # Handles:
+    # send 95Mbps
+    # send 1.2Gbps
+    # send 850Kbps
+    # send 120bps
+    # send 1450000Bps   (bytes/sec)
+    throughput_regex = re.compile(r"send\s+(\d+\.?\d*)\s*([KMG]?)([bB])ps")
+    match = throughput_regex.search(output)
+
+    throughput_mbps = None
+
+    if match:
+        value = float(match.group(1))
+        prefix = match.group(2)   # K / M / G / ""
+        unit = match.group(3)     # b = bits, B = bytes
+
+        # Convert prefix to multiplier
+        scale = {
+            "": 1,
+            "K": 1e3,
+            "M": 1e6,
+            "G": 1e9
+        }[prefix]
+
+        # Convert to bits/sec first
+        bps = value * scale
+        if unit == "B":
+            bps *= 8   # bytes -> bits
+
+        # Convert bits/sec -> Mbps
+        throughput_mbps = bps / 1e6
+
+    return (int(cwnd[0]), throughput_mbps) if cwnd and throughput_mbps is not None else (None, None)
+
 
 def run_iperf_client(target_ip, port):
     # TODO: Here we change the parameters to the iperf command
@@ -46,6 +82,7 @@ def update_plot(frame, cwnd_values, throughput_values):
         ax2.set_title('Throughput vs. Time')
         ax2.set_ylim(bottom=0)
         ax2.grid(visible=True, axis='y', linestyle=':')
+        # Comment the next 2 lines if you get an error about exceeding Locator.MAXTICKS
         ax2.yaxis.set_major_locator(ticker.MultipleLocator(2))
         ax2.yaxis.set_minor_locator(ticker.MultipleLocator(1))
 

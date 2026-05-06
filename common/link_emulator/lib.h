@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define MAX_LEN 1400
+#define MAX_LEN 1500
 
 typedef struct {
   int len;
