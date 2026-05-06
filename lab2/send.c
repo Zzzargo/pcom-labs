@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,14 +28,27 @@ static int ID = 123131;
 int send_frame(char *buf, int size)
 {
 
-	/* TODO 1.1: Create a new frame. */
+	/* Create a new frame. */
+	struct Frame *frame = calloc(1, sizeof(struct Frame));
+	frame->frame_delim_start[0] = DLE;
+	frame->frame_delim_start[1] = STX;
+	frame->frame_delim_end[0] = DLE;
+	frame->frame_delim_end[1] = ETX;
 
-	/* TODO 1.2: Copy the data from buffer to our frame structure */
+	/* Copy the data from buffer to our frame structure */
+	memcpy(frame->payload, buf, size);
 
-	/* TODO 2.1: Set the destination and source */
+	/* Set the destination and source */
+	frame->source = ID;
+	frame->dest = 123131;
 
-	/* TODO 1.3: We can cast the frame to a char *, and iterate through sizeof(struct Frame) bytes
-	 calling send_bytes. */
+	/* We can cast the frame to a char *, and iterate through sizeof(struct Frame) bytes calling send_bytes. */
+	uint8_t *byteFrame = (uint8_t *)frame;
+	int frameRawSize = sizeof(struct Frame);
+
+	for (int i = 0; i < frameRawSize; i++) {
+		send_byte(byteFrame[i]);
+	}
 
 	/* if all went all right, return 0 */
 	return 0;
@@ -44,21 +58,9 @@ int main(int argc,char** argv){
 	// Don't touch this
 	init(HOST,PORT);
 
-	// TODO remove these sends, whih are hardcoded to send a "Hello"
-	// message, and replace them with code that can send any message.
-	/* Send Hello */
-	send_byte(DLE);
-	send_byte(STX);
-	send_byte('H');
-	send_byte('e');
-	send_byte('l');
-	send_byte('l');
-	send_byte('o');
-	send_byte('!');
-	send_byte(DLE);
-	send_byte(ETX);
-
-	/* TODO 1.0: Get some input in a buffer and call send_frame with it */
+	/* Get some input in a buffer and call send_frame with it */
+	char buf[30] = "Sa-mi bag pula waaai petrea";
+	send_frame(buf, sizeof(buf) / sizeof(buf[0]));
 
 	/* TODO 3.1: Get a timestamp of the current time copy it in the the payload */
 

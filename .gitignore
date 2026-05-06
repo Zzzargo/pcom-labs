@@ -1,4 +1,2 @@
 *.o
-lab3/link_emulator/link
-lab3/recv
-lab3/send
+*.d

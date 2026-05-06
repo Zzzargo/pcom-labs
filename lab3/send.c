@@ -17,7 +17,6 @@
 int main(int argc,char** argv) {
 	init(HOST,PORT);
 
-	/* Look in common.h for the definition of l3_msg */
 	struct l3_msg t;
 
 	/* We set the payload */

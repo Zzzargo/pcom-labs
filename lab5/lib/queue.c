@@ -9,6 +9,8 @@ struct queue
 	list tail;
 };
 
+typedef struct queue *queue;
+
 queue queue_create(void)
 {
 	queue q = malloc(sizeof(struct queue));

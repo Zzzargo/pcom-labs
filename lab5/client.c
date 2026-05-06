@@ -11,9 +11,10 @@
 #include <unistd.h>
 #include <time.h>
 
-#include "common.h"
-#include "queue.h"
-#include "utils.h"
+// Intellisense gets annoyed rather quickly with the includes
+#include "../include/common.h"
+#include "../include/queue.h"
+#include "../include/utils.h"
 
 #define TICK(X)                                                                \
   struct timespec X;                                                           \
