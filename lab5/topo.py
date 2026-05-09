@@ -28,7 +28,7 @@ class LinuxRouter( Node ):
     "A Node with IP forwarding enabled."
 
     # pylint: disable=arguments-differ
-    def config( self, **params ):
+    def config( self, **params ): # type: ignore
         super( LinuxRouter, self).config( **params )
         # Enable forwarding on the router
         self.cmd( 'sysctl net.ipv4.ip_forward=1' )

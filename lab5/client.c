@@ -29,8 +29,9 @@
 
 /* Max size of the datagrams that we will be sending */
 #define CHUNKSIZE 1024
-#define SENT_FILENAME "file.bin"
-#define SERVER_IP "172.16.0.100"
+#define SENT_FILENAME "README.md"
+// #define SERVER_IP "172.16.0.100"
+#define SERVER_IP "192.168.12.145"
 
 /* Queue we will use for datagrams */
 queue datagram_queue;
@@ -48,10 +49,16 @@ void send_file_start_stop(int sockfd, struct sockaddr_in server_address,
     int n = read(fd, d.payload, sizeof(d.payload));
     DIE(n < 0, "read");
     d.len = n;
+    // Send the datagram
+    rc = sendto(sockfd, &d, sizeof(struct seq_udp), 0,
+                (struct sockaddr *)&server_address, sizeof(server_address));
+    DIE(rc < 0, "send");
 
-    /* TODO 1.2: Send the datagram. */
-
-    /* TODO 1.3: Wait for ACK before moving to the next datagram to send. */
+    // Wait for ACK before moving to the next datagram to send
+    int ack;
+    rc = recvfrom(sockfd, &ack, sizeof(ack), 0, NULL, NULL);
+    DIE(rc < 0, "recvfrom");
+    DIE(ack != 0, "Invalid ACK received");
     
     if (n == 0) // end of file
       break;
@@ -59,37 +66,64 @@ void send_file_start_stop(int sockfd, struct sockaddr_in server_address,
   }
 }
 
+// It's important to note that the link is assumed to be perfect in this scenario
 void send_file_window(int sockfd, struct sockaddr_in server_address,
                       char *filename) {
-
   int fd = open(filename, O_RDONLY);
   DIE(fd < 0, "open");
   int rc;
 
-  /* TODO 2.1: Increase window size to a value that optimally uses the link */
-  int window_size = 1;
+  // Window size = a value that optimally uses the link
+  // Link1: 10MBps, 5ms delay, 0%loss
+  // Link2: 10MBps, 5ms delay, 0%loss
+  // => BDP = 10MBps * 5ms = 10^6 bytes/s * 5*10^-3 s = 5000 bytes
+  // => window size = BDP / datagram size = 5000 bytes / 1024 bytes = ~4 datagrams
+  // (inferior level protocol headers will have space)
+  int window_size = 4;
+  int packets_sent = 0;
+  int acks_received = 0;
+  int finished_reading = 0;
 
-  while (1) {
-    /* TODO: 1.1 Read all the data of the and add it as datagrams in
-     * datagram_queue */
-    /* Reads the content of a file */
-    struct seq_udp *d = malloc(sizeof(struct seq_udp));
-    int n = read(fd, d->payload, sizeof(d->payload));
-    DIE(n < 0, "read");
-    d->len = n;
-    //queue_enq(datagram_queue, d);
+  while (!finished_reading || acks_received < packets_sent) {
+    // Fill the window
+    while (packets_sent - acks_received < window_size && !finished_reading) {
+      struct seq_udp *d = malloc(sizeof(struct seq_udp));
+      // Read a chunk of the file
+      int n = read(fd, d->payload, sizeof(d->payload));
+      DIE(n < 0, "read");
+      
+      if (n == 0) {
+        finished_reading = 1;
+        free(d);
+        break;
+      }
 
-    if (n == 0) // end of file
-      break;
+      d->len = n;
+      // Send the chunk datagram right after reading it
+      rc = sendto(sockfd, d, sizeof(struct seq_udp), 0,
+                  (struct sockaddr *)&server_address, sizeof(server_address));
+      DIE(rc < 0, "send");
+      
+      free(d);
+      packets_sent++;
+    }
+
+    // If the window is full, wait for an ACK
+    if (acks_received < packets_sent) {
+      int ack;
+      rc = recvfrom(sockfd, &ack, sizeof(ack), 0, NULL, NULL);
+      DIE(rc < 0, "recvfrom");
+      DIE(ack != 0, "Invalid ACK received");
+      acks_received++;
+    }
   }
 
-  // seq_udp *t = queue_deq(datagram_queue)
-
-  /* TODO 2.2: Send window_size packets from the queue. Don't forget to free the
-   * data. */
-
-  /* TODO 2.2: On ACK, slide the window by popping the queue and sending the
-   * next datagram. */
+  // Finally send an empty datagram to signal the end of the file
+  struct seq_udp d;
+  d.len = 0;
+  rc = sendto(sockfd, &d, sizeof(struct seq_udp), 0,
+              (struct sockaddr *)&server_address, sizeof(server_address));
+  DIE(rc < 0, "send");
 }
 
 void send_a_message(int sockfd, struct sockaddr_in server_address) {
@@ -136,12 +170,10 @@ int main(void) {
   rc = inet_aton(SERVER_IP, &servaddr.sin_addr);
   DIE(rc == 0, "Invalid IP address for server");
 
-  /* TODO: Read the demo function.
-  Implement and test (one at a time) each of the proposed versions for sending a
-  file. */
-  send_a_message(sockfd, servaddr);
+  // Test (one at a time) each of the proposed versions for sending a file
+  // send_a_message(sockfd, servaddr);
   // send_file_start_stop(sockfd, servaddr, SENT_FILENAME);
-  // send_file_window(sockfd, servaddr, SENT_FILENAME);
+  send_file_window(sockfd, servaddr, SENT_FILENAME);
 
   /* Print the runtime of the program */
   TOCK(TIME_A);

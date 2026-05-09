@@ -12,8 +12,8 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "common.h"
-#include "utils.h"
+#include "./include/common.h"
+#include "./include/utils.h"
 
 #define SAVED_FILENAME "received_file.bin"
 
@@ -22,41 +22,58 @@ int recv_seq_udp(int sockfd, struct seq_udp *seq_packet, int expected_seq) {
   socklen_t clen = sizeof(client_addr);
 
   // Receive a segment with seq_number seq_packet->seq
-  int rc = recvfrom(sockfd, seq_packet, sizeof(struct seq_udp), 0,
+  int bytes_read = recvfrom(sockfd, seq_packet, sizeof(struct seq_udp), 0,
                     (struct sockaddr *)&client_addr, &clen);
+  DIE(bytes_read < 0, "recvfrom");
 
-  // TODO: Check if the sequence number is the expected one.
+  // Check if the sequence number is the expected one.
+  if (ntohs(seq_packet->seq) == expected_seq) {
+    // If we got the expected packet (by seq) send ACK for the seq.packet
+    // and return the number of bytes read. 
+    // We will increase expected_seq in the calling function (recv_a_file(...))
+    uint16_t ack[2] = {htons(0), seq_packet->seq}; // ACK flag = 0, ACKed sequence number
+    int rc = sendto(sockfd, ack, sizeof(ack), 0, (struct sockaddr *)&client_addr, clen);
+    DIE(rc < 0, "send-ack");
+    return bytes_read;
+  }
 
-  // TODO: If we got the expected packet (by seq) send ACK for the seq.packet
-  // and return the number of bytes read. 
-  // We will increase expected_seq in the calling function (recv_a_file(...))
-
-  // TODO: If segment is not with the expected number, send ACK
+  // If segment is not with the expected number, send ACK
   // for the last well received packet (expected_seq - 1) and return -1
+  uint16_t ack[2] = {htons(0), htons(expected_seq == 0 ? 0 : expected_seq - 1)}; // ACK flag = 0, ACKed sequence number
+  int rc = sendto(sockfd, ack, sizeof(ack), 0, (struct sockaddr *)&client_addr, clen);
+  DIE(rc < 0, "send-ack");
+  return -1;
 }
 
 void recv_a_file(int sockfd, char *filename) {
   int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
   DIE(fd < 0, "open");
   struct seq_udp p;
-  int expected_seq = 0;
+  int expected_seq = 1; // 1-based indexing for go-back-n
   int rc;
 
   while (1) {
     // Receive a chunk
     rc = recv_seq_udp(sockfd, &p, expected_seq);
 
-    // TODO: If rc == -1 => we didn't receive the expected segment. We continue (retry to receive the same chunk).
+    // If rc == -1 => we didn't receive the expected segment. We continue (retry to receive the same chunk).
+    if (rc == -1) {
+      continue;
+    }
 
-    // TODO: If rc >=0 => we receive the expected segment. We increase expected_seq
+    // If rc >=0 => we receive the expected segment. We increase expected_seq
+    if (rc >= 0) {
+      expected_seq++;
+    }
 
     // An empty payload means the file ended.
-    if (p.len == 0)
+    if (ntohs(p.len) == 0) {
       // Break if file ended
       break;
+    }
 
     // Write the chunk to the file
-    write(fd, p.payload, p.len);
+    write(fd, p.payload, ntohs(p.len));
   }
 
   close(fd);
@@ -110,10 +127,8 @@ int main(void) {
   int rc = bind(sockfd, (const struct sockaddr *)&servaddr, sizeof(servaddr));
   DIE(rc < 0, "bind failed");
 
-  // TODO 1.0: Study the code. Uncoment this to receive a file chuck by chuck
-  // and save it locally
-  recv_a_message(sockfd);
-  // recv_a_file(sockfd, SAVED_FILENAME);
+  // recv_a_message(sockfd);
+  recv_a_file(sockfd, SAVED_FILENAME);
 
   return 0;
 }

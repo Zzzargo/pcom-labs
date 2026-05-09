@@ -102,10 +102,8 @@ int main(void) {
   int rc = bind(sockfd, (const struct sockaddr *)&servaddr, sizeof(servaddr));
   DIE(rc < 0, "bind failed");
 
-  // TODO 1.0: Study the code. Uncoment this to receive a file chuck by chuck
-  // and save it locally
-  recv_a_message(sockfd);
-  // recv_a_file(sockfd, SAVED_FILENAME);
+  // recv_a_message(sockfd);
+  recv_a_file(sockfd, SAVED_FILENAME);
 
   return 0;
 }
