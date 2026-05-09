@@ -18,8 +18,12 @@
 
 #include "common.h"
 #include "helpers.h"
+#include <sys/time.h>
+#include <sys/timerfd.h>
 
 #define MAX_CONNECTIONS 32
+
+int timerfd;
 
 // Primeste date de pe connfd1 si trimite mesajul receptionat pe connfd2
 int receive_and_send(int connfd1, int connfd2, size_t len) {
@@ -89,7 +93,7 @@ void run_chat_server(int listenfd) {
 void run_chat_multi_server(int listenfd) {
 
   struct pollfd poll_fds[MAX_CONNECTIONS];
-  int num_sockets = 1;
+  int num_sockets = 2;  // listenfd + timerfd
   int rc;
 
   struct chat_packet received_packet;
@@ -104,9 +108,11 @@ void run_chat_multi_server(int listenfd) {
   poll_fds[0].events = POLLIN;
 
   /*
-    TODO 3: Adaugati un timerfd. Read-ul pe el se va debloca periodic, moment
-    in care veti trimite anuntul promotional catre toti clientii.
+    Read-ul de pe timerfd se va debloca periodic, moment in care
+    se trimite anuntul promotional catre toti clientii
   */
+  poll_fds[1].fd = timerfd;
+  poll_fds[1].events = POLLIN;
 
   while (1) {
     // Asteptam sa primim ceva pe unul dintre cei num_sockets socketi
@@ -133,6 +139,19 @@ void run_chat_multi_server(int listenfd) {
           printf("Noua conexiune de la %s, port %d, socket client %d\n",
                  inet_ntoa(cli_addr.sin_addr), ntohs(cli_addr.sin_port),
                  newsockfd);
+        } else if (poll_fds[i].fd == timerfd) {
+          // Se trimite anuntul
+          uint64_t expirations;
+          rc = read(timerfd, &expirations, sizeof(expirations));
+          DIE(rc < 0, "read timerfd");
+          char promo_msg[] = "Dragi clienti, pentru doar 12 lei o sa puteti trimite de 10 ori mai multe mesaje in jumatate din timp\n";
+          struct chat_packet promo_packet;
+          promo_packet.len = sizeof(promo_msg);
+          memcpy(promo_packet.message, promo_msg, sizeof(promo_msg));
+          for (int j = 2; j < num_sockets; j++) {
+            rc = send_all(poll_fds[j].fd, &promo_packet, sizeof(promo_packet));
+            DIE(rc < 0, "send_all timerfd");
+          }
         } else {
           // Am primit date pe unul din socketii de client, asa ca le receptionam
           int rc = recv_all(poll_fds[i].fd, &received_packet,
@@ -152,7 +171,15 @@ void run_chat_multi_server(int listenfd) {
           } else {
             printf("S-a primit de la clientul de pe socketul %d mesajul: %s\n",
                    poll_fds[i].fd, received_packet.message);
-            /* TODO 2.1: Trimite mesajul catre toti ceilalti clienti */
+
+            /* Trimite mesajul catre toti ceilalti clienti */
+            for (int j = 2; j < num_sockets; j++) {
+              if (j != i) {
+                int rc = send_all(poll_fds[j].fd, &received_packet,
+                                  sizeof(received_packet));
+                DIE(rc < 0, "send_all");
+              }
+            }
           }
         }
       }
@@ -197,14 +224,22 @@ int main(int argc, char *argv[]) {
   rc = bind(listenfd, (const struct sockaddr *)&serv_addr, sizeof(serv_addr));
   DIE(rc < 0, "bind");
 
-  /*
-    TODO 2.1: Folositi implementarea cu multiplexare
-  */
-  run_chat_server(listenfd);
-  // run_chat_multi_server(listenfd);
+  // Timer pentru anunturi promotionale, odata la 4s
+  timerfd = timerfd_create(CLOCK_REALTIME,  0);
 
-  // Inchidem listenfd
+  struct itimerspec spec;
+  spec.it_value.tv_sec = 4;
+  spec.it_value.tv_nsec = 0;
+  spec.it_interval.tv_sec = 4;
+  spec.it_interval.tv_nsec = 0;
+  timerfd_settime(timerfd, 0, &spec, NULL);
+
+  // run_chat_server(listenfd);
+  run_chat_multi_server(listenfd);
+
+  // Inchidem file descriptorii creati
   close(listenfd);
+  close(timerfd);
 
   return 0;
 }
